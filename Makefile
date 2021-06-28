@@ -45,8 +45,8 @@ light-bsc-contracts:
 # start-relayer eth2near-relay, near2eth-relay and bridge-watchdog
 start-relayer:
 	cli/index.js start eth2near-relay
-# cli/index.js start near2eth-relay 
-# cli/index.js start bridge-watchdog
+	cli/index.js start near2eth-relay 
+	cli/index.js start bridge-watchdog
 	pm2 logs
 
 stop-all:

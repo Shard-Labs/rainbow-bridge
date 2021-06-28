@@ -151,7 +151,7 @@ class EthOnNearClientContract extends BorshContract {
       
       // if validateHeaderMode is bsc(POSA) we have to get the last epoch header
       if (validateHeaderMode == "bsc" && lastBlockNumber%200 != 0){
-        lastBlockNumber = (lastBlockNumber - lastBlockNumber%200) -200
+        lastBlockNumber = lastBlockNumber - lastBlockNumber%200
       }
       
       const blockRlp = web3BlockToRlp(
