@@ -21,14 +21,14 @@ gen-contracts:
 # start near blockchain and connect with ganache.
 start-ethash:
 	cli/index.js clean
-	cli/index.js prepare --core-src ${HOME}/Desktop/core
+	cli/index.js prepare
 	cli/index.js start near-node
 	cli/index.js start ganache
 
 # start near blockchain and connect with binance test net.
 start-bsc:
 	cli/index.js clean
-	cli/index.js prepare --core-src ${HOME}/Desktop/core
+	cli/index.js prepare
 	cli/index.js start near-node
 	cli/index.js start binance-smart-chain
 

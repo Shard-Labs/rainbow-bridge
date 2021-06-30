@@ -449,14 +449,13 @@ impl EthClient {
             return false;
         }
         
-        let (gas_limit_bound_divisor, min_gas_limit) = (256, 5000);
         let prev_gas_limit = format!("{}", prev.gas_limit).parse::<i64>().unwrap();
         let header_gas_limit = format!("{}", header.gas_limit).parse::<i64>().unwrap();
         let diff = (prev_gas_limit-header_gas_limit).abs();
-        let limit = prev_gas_limit / gas_limit_bound_divisor;
+        let limit = prev_gas_limit / 256;
         
         // Verify that the gas limit remains within allowed bounds
-        if diff >= limit || header.gas_limit < U256(min_gas_limit.into()) {
+        if diff >= limit {
             return false;
         }
         
@@ -523,7 +522,7 @@ impl EthClient {
             self.get_epoch_header()
         };
 
-        if !self.is_validator_exists(&epoch_header, header.author) {
+        if !self.is_in_validator_set(&epoch_header, header.author) {
             return false;
         }
          
@@ -624,7 +623,7 @@ impl EthClient {
     }  
 
     // check if the author is in the validators set.
-    fn is_validator_exists (&self, epoch_header: &BlockHeader, add: Address) -> bool{
+    fn is_in_validator_set (&self, epoch_header: &BlockHeader, add: Address) -> bool{
         
         let (extra_vanity, extra_seal, address_size) = (32, 65, 20);
         let validators =
