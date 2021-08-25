@@ -69,7 +69,7 @@ class Near2EthRelay {
         })
         const lastFinalBlockHash = headBlock.header.last_final_block
         // The finalized block is not immediately available so we wait for it to become available.
-        let lightClientBlock = null
+        let lightClientBlock = {}
         let currentValidators = null
         while (_.isEmpty(lightClientBlock)) {
           currentValidators = await this.near.connection.provider.sendJsonRpc(
