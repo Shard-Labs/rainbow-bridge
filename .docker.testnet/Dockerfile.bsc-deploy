@@ -3,12 +3,10 @@ WORKDIR /opt/web
 
 RUN apk --no-cache add git nodejs yarn
 
-# COPY ./package*.json ./
 COPY ./ ./
+
 ## init
 RUN yarn && yarn install
-
-# COPY ./ ./
 
 ## gen-contracts
 RUN cd /opt/web/contracts/eth/nearbridge/ && yarn && yarn build && \
