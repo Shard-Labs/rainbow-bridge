@@ -151,3 +151,5 @@ transfer-near-to-eth:
 		--eth-receiver-address 0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39
 
 .PHONY: help init yarn-init gen-contracts local-start local-start-bsc local-full-contracts init-config testnet-full-contracts start-relayer stop-all build-eth-client build-bsc-client build-eth-prover test-eth-client near-balance transfer-eth-to-near transfer-near-to-eth
+
+include .docker.testnet/Makefile
