@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  eth2near-relay:
+    build:
+      context: ../
+      dockerfile: ./.docker.testnet/Dockerfile.bsc-deploy
+    image: eth2near-relay
+    container_name: eth2near-relay
+    command: cli/index.js start eth2near-relay --gas-per-transaction 100000000000000 --total-submit-block 3 --daemon false
+
+  near2eth-relay:
+    build:
+      context: ../
+      dockerfile: ./.docker.testnet/Dockerfile.bsc-deploy
+    image: near2eth-relay
+    container_name: near2eth-relay
+    command: cli/index.js start near2eth-relay --eth-master-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200 --daemon false
+
+  bridge-watchdog:
+    build:
+      context: ../
+      dockerfile: ./.docker.testnet/Dockerfile.bsc-deploy
+    image: bridge-watchdog
+    container_name: bridge-watchdog
+    command: cli/index.js start bridge-watchdog --eth-master-sk 0x6c4f2ebaf0ffa68c9822d7645fd52f365fad8164296323aa9ee4e987120a105c --daemon false
