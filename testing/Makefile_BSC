@@ -16,10 +16,13 @@ help:
 
 # ===============================Local<>Testnet==============================
 
+# start near blockchain and connect with ganache.
+start-near-and-ganache-nodes:
+	cli/index.js start near-node
+	cli/index.js ganache
+
 # start near blockchain and connect with binance test net.
 start-near-and-bsc-nodes:
-	cli/index.js clean
-	cli/index.js prepare
 	cli/index.js start near-node
 	cli/index.js start binance-smart-chain \
 		--eth-node-url ${BSC_TESTNET_URL} \
@@ -27,7 +30,9 @@ start-near-and-bsc-nodes:
 
 # deploy bsc contracts on testnet and near localy
 bsc-deploy-full-contracts-localy:
-	cli/index.js init-near-contracts
+	cli/index.js init-near-contracts \
+		--near-client-contract-path ${PWD}/${NEAR_BSC_CLIENT_CONTRACT} \
+		--near-prover-contract-path ${PWD}/${NEAR_BSC_PROVER_CONTRACT}
 	cli/index.js init-eth-ed25519
 	cli/index.js init-eth-client
 	cli/index.js init-eth-prover

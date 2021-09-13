@@ -44,7 +44,7 @@ start-local-near-and-ganache-nodes:
 	cli/index.js start near-node
 	cli/index.js start ganache
 
-# ===============================Deploy contracts==============================
+# ===============================Deploy contracts localy==============================
 
 # deploy contracts to testnets NEAR and BSC
 deploy-full-contracts:
