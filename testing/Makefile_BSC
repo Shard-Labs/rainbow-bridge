@@ -1,24 +1,17 @@
-include testing/test.env
+include testing/bsc_test.env
 
-eccc:
-	@echo ${NEAR_BSC_CLIENT_CONTRACT}
 help:
-	@echo ======================================Local dev=====================================
-	@echo 0 Initialize the env using the main Makefile
-	@echo 1 run "make deploy-full-contracts"
-	@echo 2 run "make start-relayer"
-	@echo 3 run "stop-all"
-	@echo
-	@echo ======================================Testnet======================================
-	@echo 1 run "make bsc-init-test-config" copy config testnet file to ${HOME}/.rainbow/config.json
-	@echo 2 run "make bsc-testnet-full-contracts" Deploy contracts to BSC and NEAR.
-	@echo 3 run "make start-relayer" Deploy contracts to BSC and NEAR.
+	@echo ======================================Near Testnet + BSC Testnet dev=====================================
+	@echo Description: Use Nearup and bsc testnet
+	@echo 1 run "make start-near-and-bsc-nodes" start bsc and nearup localy
+	@echo 2 run "make bsc-deploy-testnet-full-contracts" deploy contracts
+	@echo 3 run "make start-relayer"
 	@echo 4 run "stop-all"
 	@echo
-	@echo ======================================Test the tesnet bridge======================================
-	@echo 1 run "make bsc-near-balance" get balance of a near account.
-	@echo 2 run "make bsc-transfer-eth-to-near" transfer tokens from eth to near.
-	@echo 3 run "make bsc-transfer-near-to-eth" transfer tokens from near to eth.
+	@echo ======================================Test Send ERC20 on testnet======================================
+	@echo 1 run "make bsc-testnet-near-balance" get balance of a near account.
+	@echo 2 run "make bsc-testnet-transfer-eth-to-near" transfer tokens from eth to near.
+	@echo 3 run "make bsc-testnet-transfer-near-to-eth" transfer tokens from near to eth.
 	@echo
 
 # ===============================Local<>Testnet==============================
@@ -32,17 +25,11 @@ start-near-and-bsc-nodes:
 		--eth-node-url ${BSC_TESTNET_URL} \
 		--eth-master-sk ${ETH_MASTER_SK}
 
-# ===============================Deploy Contracts Local==============================
-
-# deploy full contracts.
-deploy-full-contracts:
-	cli/index.js init-near-contracts \
-		--num-confirmations ${NUM_CONFIRMATIONS} \
-		--near-prover-contract-path ${NEAR_PROVER_BSC_CONTRACT}
+# deploy bsc contracts on testnet and near localy
+bsc-deploy-full-contracts-localy:
+	cli/index.js init-near-contracts
 	cli/index.js init-eth-ed25519
-	cli/index.js init-eth-client \
-		--eth-client-lock-duration ${ETH_CLIENT_LOCK_DURATION} \
-		--eth-client-replace-duration ${ETH_CLIENT_REPLACE_DURATION}
+	cli/index.js init-eth-client
 	cli/index.js init-eth-prover
 	cli/index.js init-eth-erc20
 	cli/index.js init-eth-locker
@@ -74,6 +61,7 @@ bsc-deploy-testnet-full-contracts:
 		--eth-client-lock-duration ${ETH_CLIENT_LOCK_DURATION}
 	cli/index.js init-eth-prover \
 
+# deploy bsc locker and near erc20 factory contracts to testnets NEAR and BSC
 bsc-deploy-testnet-factory:
 	cli/index.js init-eth-locker \
 		--eth-gas-multiplier ${ETH_GAS_MULTIPLIER} \
@@ -102,10 +90,12 @@ stop-all:
 
 # ===============================Test the bsc bridge==============================
 
+# get near balance of a wallet
 bsc-testnet-near-balance:
 	cli/index.js TESTING get-bridge-on-near-balance \
 		--near-receiver-account ${NEAR_RECEIVER_ACCOUNT}
 
+# transfer ERC20 from eth to near
 bsc-testnet-transfer-eth-to-near:
 	cli/index.js TESTING transfer-eth-erc20-to-near \
 		--amount 10 --eth-sender-sk ${ETH_MASTER_SK} \
@@ -113,6 +103,7 @@ bsc-testnet-transfer-eth-to-near:
 		--near-master-account ${NEAR_RECEIVER_ACCOUNT} \
 		--near-master-sk ${NEAR_RECEIVER_SK}
 
+# transfer ERC20 from near to eth
 bsc-testnet-transfer-near-to-eth:
 	cli/index.js TESTING transfer-eth-erc20-from-near \
 		--amount 1 \
@@ -121,16 +112,12 @@ bsc-testnet-transfer-near-to-eth:
 		--eth-receiver-address ${ETH_MASTER_ADDRESS}
 
 .PHONY: start-near-and-bsc-nodes \
-		deploy-full-contracts \
+		bsc-deploy-full-contracts-localy \
 		bsc-init-test-config \
-		bsc-testnet-full-contracts \
-		bsc-testnet-factory \
+		bsc-deploy-testnet-full-contracts \
+		bsc-deploy-testnet-factory \
 		start-relayer \
 		stop-all \
-		bsc-build-client \
-		bsc-build-prover \
-		bsc-test-client \
-		bsc-test-prover \
 		bsc-testnet-near-balance \
 		bsc-testnet-transfer-eth-to-near \
 		bsc-testnet-transfer-near-to-eth
