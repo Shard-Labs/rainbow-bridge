@@ -15,8 +15,12 @@ services:
     restart: always
     command: cli/index.js start near2eth-relay --eth-master-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200 --daemon false
 
+
   bridge-watchdog:
     image: near:latest
     container_name: bridge-watchdog
     restart: always
     command: cli/index.js start bridge-watchdog --eth-master-sk 0x6c4f2ebaf0ffa68c9822d7645fd52f365fad8164296323aa9ee4e987120a105c --daemon false
+    depends_on:
+      - eth2near-relay
+      - near2eth-relay
