@@ -278,8 +278,89 @@ class InitEthProver {
   }
 }
 
+class InitEthErc721 {
+  static async execute ({
+    ethNodeUrl,
+    ethMasterSk,
+    ethErc721AbiPath,
+    ethErc721BinPath,
+    ethGasMultiplier
+  }) {
+    const ethContractInitializer = new EthContractInitializer()
+    const success = await ethContractInitializer.execute(
+      {
+        args: ['Rainbow Bridge', 'NFT'],
+        gas: 3000000,
+        ethContractAbiPath: ethErc721AbiPath,
+        ethContractBinPath: ethErc721BinPath,
+        ethNodeUrl,
+        ethMasterSk,
+        ethGasMultiplier
+      }
+    )
+    if (!success) {
+      console.log("Can't deploy", ethErc721AbiPath)
+      process.exit(1)
+    }
+    return {
+      ethErc721Address: success.ethContractAddress
+    }
+  }
+}
+
+class InitEthERC721Locker {
+  static async execute ({
+    ethNodeUrl,
+    ethMasterSk,
+    nearNftFactoryAccount,
+    ethProverAddress,
+    ethNftLockerAbiPath,
+    ethNftLockerBinPath,
+    ethAdminAddress,
+    ethGasMultiplier
+  }) {
+    if (ethAdminAddress === '') {
+      const web3 = new Web3('')
+      ethAdminAddress = web3.eth.accounts.privateKeyToAccount(ethMasterSk).address
+    }
+
+    console.log('Using as locker admin:', ethAdminAddress)
+    const ethContractInitializer = new EthContractInitializer()
+    const minBlockAcceptanceHeight = 0
+    const pausedFlag = 0
+
+    const success = await ethContractInitializer.execute(
+      {
+        args: [
+          Buffer.from(nearNftFactoryAccount, 'utf8'),
+          ethProverAddress,
+          minBlockAcceptanceHeight,
+          ethAdminAddress,
+          pausedFlag
+        ],
+        gas: 5000000,
+        ethContractAbiPath: ethNftLockerAbiPath,
+        ethContractBinPath: ethNftLockerBinPath,
+        ethNodeUrl,
+        ethMasterSk,
+        ethGasMultiplier
+      }
+    )
+    if (!success) {
+      console.log("Can't deploy", ethNftLockerAbiPath)
+      process.exit(1)
+    }
+    return {
+      ethNftLockerAddress: success.ethContractAddress,
+      ethAdminAddress: ethAdminAddress
+    }
+  }
+}
+
 exports.InitEthEd25519 = InitEthEd25519
 exports.InitEthErc20 = InitEthErc20
 exports.InitEthLocker = InitEthLocker
 exports.InitEthClient = InitEthClient
 exports.InitEthProver = InitEthProver
+exports.InitEthErc721 = InitEthErc721
+exports.InitEthERC721Locker = InitEthERC721Locker
