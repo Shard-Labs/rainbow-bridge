@@ -53,3 +53,10 @@ transfer-eth-erc721-to-near:
 		--eth-sender-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200 \
 		--near-receiver-account node0 \
 		--near-master-account nearnftfactory \
+
+transfer-eth-erc721-from-near:
+	cli/index.js TESTING transfer-eth-erc721-from-near \
+		--tokenId 1 \
+		--near-sender-account node0 \
+		--near-sender-sk ed25519:3D4YudUQRE39Lc4JHghuB5WM8kbgDDa34mnrEP5DdTApVH81af7e2dWgNPEaiQfdJnZq1CNPp5im4Rg5b733oiMP \
+		--eth-receiver-address 0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39

@@ -5,6 +5,7 @@ const {
 } = require('./transfer-eth-erc20')
 const {
   TransferETHERC721ToNear,
+  TransferEthERC721FromNear,
   DeployNFT
 } = require('./transfer-eth-erc721')
 const {
@@ -22,6 +23,7 @@ const {
 
 exports.TransferETHERC20ToNear = TransferETHERC20ToNear
 exports.TransferEthERC20FromNear = TransferEthERC20FromNear
+exports.TransferEthERC721FromNear = TransferEthERC721FromNear
 exports.DeployToken = DeployToken
 exports.TransferETHERC721ToNear = TransferETHERC721ToNear
 exports.DeployNFT = DeployNFT

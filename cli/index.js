@@ -26,6 +26,7 @@ const {
   TransferEthERC20FromNear,
   DeployToken,
   TransferETHERC721ToNear,
+  TransferEthERC721FromNear,
   DeployNFT,
   mintErc20,
   mintErc721,
@@ -896,6 +897,52 @@ RainbowConfig.addOptions(
     'eth-erc20-abi-path',
     'eth-locker-address',
     'eth-locker-abi-path',
+    'eth-client-artifact-path',
+    'eth-client-address',
+    'eth-prover-artifact-path',
+    'eth-prover-address',
+    'eth-gas-multiplier'
+  ]
+)
+
+RainbowConfig.addOptions(
+  testingCommand
+    .command('transfer-eth-erc721-from-near')
+    .option('--tokenId <token_id>', 'Token id of ERC721 token to transfer')
+    .option(
+      '--near-sender-account <near_sender_account>',
+      'Near account that will be sending fungible token.'
+    )
+    .option(
+      '--near-sender-sk <near_sender_sk>',
+      'The secret key of Near account that will be sending the fungible token.'
+    )
+    .option(
+      '--eth-receiver-address <eth_receiver_address>',
+      'The account that will be receiving the token on Ethereum side.'
+    )
+    .option(
+      '--token-name <token_name>',
+      'Specific ERC721 token that is already bound by `deploy-token`.'
+    ),
+  ({ tokenName, ...args }) => {
+    if (tokenName) {
+      args.ethErc721Address = RainbowConfig.getParam(`eth-${tokenName}-address`)
+      args.nearErc721Account = RainbowConfig.getParam(`near-${tokenName}-account`)
+    }
+    return TransferEthERC721FromNear.execute(args)
+  },
+  [
+    'eth-erc721-address',
+    'near-erc721-account',
+    'near-node-url',
+    'near-network-id',
+    'near-nft-factory-account',
+    'eth-node-url',
+    'eth-master-sk',
+    'eth-erc20-abi-path',
+    'eth-nft-locker-address',
+    'eth-nft-locker-abi-path',
     'eth-client-artifact-path',
     'eth-client-address',
     'eth-prover-artifact-path',
