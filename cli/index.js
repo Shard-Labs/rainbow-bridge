@@ -28,8 +28,10 @@ const {
   TransferETHERC721ToNear,
   DeployNFT,
   mintErc20,
+  mintErc721,
   getErc20Balance,
   getBridgeOnNearBalance,
+  getBridgeNftOnNearBalance,
   getClientBlockHeightHash,
   getAddressBySecretKey,
   ethToNearApprove,
@@ -835,8 +837,8 @@ RainbowConfig.addOptions(
     ),
   ({ tokenName, ...args }) => {
     if (tokenName) {
-      args.ethErc20Address = RainbowConfig.getParam(`eth-${tokenName}-address`)
-      args.nearErc20Account = RainbowConfig.getParam(`near-${tokenName}-account`)
+      args.ethErc721Address = RainbowConfig.getParam(`eth-${tokenName}-address`)
+      args.nearErc721Account = RainbowConfig.getParam(`near-${tokenName}-account`)
     }
     return TransferETHERC721ToNear.execute(args)
   },
@@ -921,6 +923,20 @@ RainbowConfig.addOptions(
 
 RainbowConfig.addOptions(
   testingCommand
+    .command('mint-erc721-tokens <eth_account_address>')
+    .description('Mint ERC721 test token for specific account address'),
+  async (ethAccountAddress, args) => {
+    await mintErc721({ ethAccountAddress, ...args })
+  },
+  [
+    'eth-node-url',
+    'eth-erc721-address',
+    'eth-erc721-abi-path'
+  ]
+)
+
+RainbowConfig.addOptions(
+  testingCommand
     .command('get-account-address <eth_secret_key>')
     .description('Get account address accessible by its secret key on Ethereum.'),
   async (ethSecretKey, args) => {
@@ -961,6 +977,24 @@ RainbowConfig.addOptions(
   },
   [
     'near-erc20-account',
+    'near-network-id',
+    'near-node-url'
+  ]
+)
+
+RainbowConfig.addOptions(
+  testingCommand
+    .command('get-bridge-on-near-nft-balance')
+    .option(
+      '--near-receiver-account <near_receiver_account>',
+      'The account on NEAR blockchain that owns bridged nft.'
+    )
+    .description('Gets balance of bridged nft from ETH to NEAR for the provided account.'),
+  async (args) => {
+    await getBridgeNftOnNearBalance(args)
+  },
+  [
+    'near-erc721-account',
     'near-network-id',
     'near-node-url'
   ]

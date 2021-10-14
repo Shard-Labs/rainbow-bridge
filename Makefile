@@ -12,13 +12,6 @@ setup-clean-and-prepare:
 start-local-near-and-ganache-nodes:
 	cli/index.js start near-node
 	cli/index.js start ganache
-	ganache --port 9545 \
-        --gasLimit 10000000 \
-        --account="0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200,10000000000000000000000000000" \
-        --account="0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501201,10000000000000000000000000000" \
-        --account="0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501202,10000000000000000000000000000" \
-        --server.ws \
-        --db localnet -h 0.0.0.0
 
 # deploy contracts to testnets NEAR and BSC
 deploy-full-contracts:
@@ -28,8 +21,8 @@ deploy-full-contracts:
 	cli/index.js init-eth-prover
 	cli/index.js init-eth-erc721
 	cli/index.js init-eth-erc721-locker
-deploy-factory:
 	cli/index.js init-near-nft-factory
+# deploy-factory:
 
 # start relayers
 start-relayer:
@@ -47,11 +40,16 @@ bsc-testnet-near-balance:
 	cli/index.js TESTING get-bridge-on-near-balance \
 		--near-receiver-account ${NEAR_RECEIVER_ACCOUNT}
 
+mint-erc721:
+	cli/index.js TESTING mint-erc721-tokens 0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39
+	
+get-balance:
+	cli/index.js TESTING get-bridge-on-near-nft-balance --near-receiver-account node0
+
 # transfer ERC721 from eth to near
 transfer-eth-erc721-to-near:
 	cli/index.js TESTING transfer-eth-erc721-to-near \
-		--tokenId \
-		--eth-sender-sk ${ETH_MASTER_SK} \
-		--near-receiver-account ${NEAR_RECEIVER_ACCOUNT} \
-		--near-master-account ${NEAR_RECEIVER_ACCOUNT} \
-		--near-master-sk ${NEAR_RECEIVER_SK}
+		--tokenId 1 \
+		--eth-sender-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200 \
+		--near-receiver-account node0 \
+		--near-master-account nearnftfactory \

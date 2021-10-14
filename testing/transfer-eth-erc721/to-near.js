@@ -18,7 +18,11 @@ const {
 const { NearMintableNft } = require('./near-mintable-nft')
 
 let initialCmd
-const txLogFilename = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-transfer-nft-erc721-from-near.log.json'
+const txLogFilename =
+  Date.now() +
+  '-' +
+  crypto.randomBytes(4).toString('hex') +
+  '-transfer-nft-erc721-from-near.log.json'
 
 class TransferETHERC721ToNear {
   static showRetryAndExit () {
@@ -32,17 +36,17 @@ class TransferETHERC721ToNear {
     ethERC721Contract,
     tokenId,
     ethSenderAccount,
-    ethLockerAddress
+    ethNftLockerAddress
   }) {
     // Approve tokens for transfer.
     try {
       console.log(
-          `Approving nft transfer to ${ethLockerAddress} id: ${tokenId}.`
+        `Approving nft transfer to ${ethNftLockerAddress} id: ${tokenId}.`
       )
       await robustWeb3.callContract(
         ethERC721Contract,
         'approve',
-        [ethLockerAddress, new BN(tokenId)],
+        [ethNftLockerAddress, new BN(tokenId)],
         {
           from: ethSenderAccount,
           gas: 5000000
@@ -67,9 +71,9 @@ class TransferETHERC721ToNear {
   }) {
     try {
       console.log(
-          `Transferring nft from the ERC721 account to the token locker account ${(new BN(
-            tokenId
-          )).toString()}.`
+        `Transferring nft from the ERC721 account to the token locker account ${new BN(
+          tokenId
+        ).toString()}.`
       )
       const transaction = await robustWeb3.callContract(
         ethNftLockerContract,
@@ -161,9 +165,9 @@ class TransferETHERC721ToNear {
     }
 
     const newOwnerId = lockedEvent.returnValues.accountId
-    const amount = lockedEvent.returnValues.amount
+    const tokenId = lockedEvent.returnValues.tokenId
     console.log(
-      `Transferring ${amount} tokens from ${lockedEvent.returnValues.token} ERC721. From ${lockedEvent.returnValues.sender} sender to ${newOwnerId} recipient`
+      `Transferring ${tokenId} tokens from ${lockedEvent.returnValues.token} ERC721. From ${lockedEvent.returnValues.sender} sender to ${newOwnerId} recipient`
     )
 
     const blockNumber = block.number
@@ -230,10 +234,7 @@ class TransferETHERC721ToNear {
 
   static loadTransferLog () {
     try {
-      const log =
-        JSON.parse(
-          fs.readFileSync(txLogFilename).toString()
-        ) || {}
+      const log = JSON.parse(fs.readFileSync(txLogFilename).toString()) || {}
       console.log('Transfer log found', log)
       return TransferETHERC721ToNear.parseBuffer(log)
     } catch (e) {
@@ -244,22 +245,39 @@ class TransferETHERC721ToNear {
 
   static async execute ({
     parent: { args },
-    amount,
+    tokenId,
     ethSenderSk,
     nearReceiverAccount,
     nearMasterAccount: nearMasterAccountId,
     nearNetworkId,
     nearNodeUrl,
     nearMasterSk,
-    nearTokenFactoryAccount,
+    nearNftFactoryAccount,
     nearClientAccount,
     nearErc721Account,
     ethNodeUrl,
     ethErc721AbiPath,
     ethErc721Address,
-    ethLockerAbiPath,
-    ethLockerAddress
+    ethNftLockerAbiPath,
+    ethNftLockerAddress
   }) {
+    console.log('args', args)
+    console.log('tokenId', tokenId)
+    console.log('ethSenderSk', ethSenderSk)
+    console.log('nearReceiverAccount', nearReceiverAccount)
+    console.log('nearMasterAccountId', nearMasterAccountId)
+    console.log('nearNetworkId', nearNetworkId)
+    console.log('nearNodeUrl', nearNodeUrl)
+    console.log('nearMasterSk', nearMasterSk)
+    console.log('nearNftFactoryAccount', nearNftFactoryAccount)
+    console.log('nearClientAccount', nearClientAccount)
+    console.log('nearErc721Account', nearErc721Account)
+    console.log('ethNodeUrl', ethNodeUrl)
+    console.log('ethErc721AbiPath', ethErc721AbiPath)
+    console.log('ethErc721Address', ethErc721Address)
+    console.log('ethNftLockerAbiPath', ethNftLockerAbiPath)
+    console.log('ethNftLockerAddress', ethNftLockerAddress)
+
     initialCmd = args.join(' ')
     let transferLog = TransferETHERC721ToNear.loadTransferLog()
     console.log(`Using ETH address ${ethErc721Address}`)
@@ -309,16 +327,16 @@ class TransferETHERC721ToNear {
 
     const nearFactoryContractBorsh = new NearMintableNft(
       nearMasterAccount,
-      nearTokenFactoryAccount
+      nearNftFactoryAccount
     )
     await nearFactoryContractBorsh.accessKeyInit()
 
     const extractor = new EthProofExtractor()
     extractor.initialize(ethNodeUrl)
 
-    const ethTokenLockerContract = new web3.eth.Contract(
-      JSON.parse(fs.readFileSync(ethLockerAbiPath)),
-      ethLockerAddress
+    const ethNftLockerContract = new web3.eth.Contract(
+      JSON.parse(fs.readFileSync(ethNftLockerAbiPath)),
+      ethNftLockerAddress
     )
 
     const ethOnNearClientContract = new EthOnNearClientContract(
@@ -329,9 +347,9 @@ class TransferETHERC721ToNear {
     if (transferLog.finished === undefined) {
       // TODO fix before using
       // Mint tokens first???
-      /* await ethERC721Contract.methods
-          .mint(ethSenderAccount, Number(amount))
-          .send({ from: ethSenderAccount, gas: 5000000 }) */
+      // await ethERC721Contract.methods
+      //   .mint(ethSenderAccount, Number(amount))
+      //   .send({ from: ethSenderAccount, gas: 5000000 })
       console.log(
         'Balance: ',
         await ethERC721Contract.methods.balanceOf(ethSenderAccount).call()
@@ -339,18 +357,18 @@ class TransferETHERC721ToNear {
       await TransferETHERC721ToNear.approve({
         robustWeb3,
         ethERC721Contract,
-        amount,
+        tokenId,
         ethSenderAccount,
-        ethLockerAddress
+        ethNftLockerAddress
       })
       transferLog = TransferETHERC721ToNear.loadTransferLog()
     }
     if (transferLog.finished === 'approve') {
       await TransferETHERC721ToNear.lock({
         robustWeb3,
-        ethTokenLockerContract,
+        ethNftLockerContract,
         ethErc721Address,
-        amount,
+        tokenId,
         nearReceiverAccount,
         ethSenderAccount
       })

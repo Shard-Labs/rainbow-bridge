@@ -40,6 +40,23 @@ async function mintErc20 ({ ethAccountAddress, amount, ethNodeUrl, ethErc20Addre
   exit(0)
 }
 
+async function mintErc721 ({ ethAccountAddress, ethNodeUrl, ethErc721Address, ethErc721AbiPath }) {
+  const robustWeb3 = new RobustWeb3(ethNodeUrl)
+  const web3 = robustWeb3.web3
+  try {
+    const ethContract = new web3.eth.Contract(
+      JSON.parse(fs.readFileSync(ethErc721AbiPath)),
+      remove0x(ethErc721Address)
+    )
+    await ethContract.methods.mint().send({ from: ethAccountAddress, gas: 5000000 })
+    console.log('OK')
+  } catch (error) {
+    console.log('Failed', error.toString())
+  }
+  web3.currentProvider.connection.close()
+  exit(0)
+}
+
 // View
 function getAddressBySecretKey ({ ethSecretKey, ethNodeUrl }) {
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
@@ -241,6 +258,45 @@ async function getBridgeOnNearBalance ({
   exit(0)
 }
 
+async function getBridgeNftOnNearBalance ({
+  nearReceiverAccount,
+  nearErc721Account,
+  nearNetworkId,
+  nearNodeUrl
+}) {
+  try {
+    const keyStore = new nearAPI.keyStores.InMemoryKeyStore()
+    const near = await nearAPI.connect({
+      nodeUrl: nearNodeUrl,
+      networkId: nearNetworkId,
+      masterAccount: nearReceiverAccount,
+      deps: { keyStore: keyStore }
+    })
+
+    const nearAccount = new nearAPI.Account(
+      near.connection,
+      nearReceiverAccount
+    )
+
+    const nearTokenContract = new nearAPI.Contract(
+      nearAccount,
+      nearErc721Account,
+      {
+        changeMethods: [],
+        viewMethods: ['nft_metadata']
+      }
+    )
+
+    const balance = await nearTokenContract.nft_metadata()
+    console.log(
+      `[Rainbow-Bridge on Near] Balance of ${nearReceiverAccount} is ${balance}`
+    )
+  } catch (error) {
+    console.log('Failed', error.toString())
+  }
+  exit(0)
+}
+
 exports.ethToNearApprove = ethToNearApprove
 exports.ethToNearLock = ethToNearLock
 exports.nearToEthUnlock = nearToEthUnlock
@@ -249,3 +305,5 @@ exports.getErc20Balance = getErc20Balance
 exports.getAddressBySecretKey = getAddressBySecretKey
 exports.getClientBlockHeightHash = getClientBlockHeightHash
 exports.getBridgeOnNearBalance = getBridgeOnNearBalance
+exports.mintErc721 = mintErc721
+exports.getBridgeNftOnNearBalance = getBridgeNftOnNearBalance
