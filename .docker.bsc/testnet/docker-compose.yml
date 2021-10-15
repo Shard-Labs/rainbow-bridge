@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  eth2near-relay:
+    build:
+      context: ../../
+      dockerfile: ./.docker.bsc/testnet/Dockerfile
+    image: near:latest
+    container_name: eth2near-relay
+    restart: always
+    command: cli/index.js start eth2near-relay
+
+  near2eth-relay:
+    image: near:latest
+    container_name: near2eth-relay
+    restart: always
+    command: cli/index.js start near2eth-relay
+
+  bridge-watchdog:
+    image: near:latest
+    container_name: bridge-watchdog
+    restart: always
+    command: cli/index.js start bridge-watchdog
+    depends_on:
+      - eth2near-relay
+      - near2eth-relay
