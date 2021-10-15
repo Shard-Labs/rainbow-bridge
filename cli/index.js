@@ -338,7 +338,9 @@ RainbowConfig.addOptions(
 RainbowConfig.addOptions(
   startCommand.command('ganache'),
   StartGanacheNodeCommand.execute,
-  []
+  [
+    'near-client-validate-header-mode'
+  ]
 )
 
 RainbowConfig.addOptions(

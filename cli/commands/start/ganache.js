@@ -3,8 +3,8 @@ const { spawnProcess } = require('./helpers')
 const { getScript } = require('rainbow-bridge-utils')
 
 class StartGanacheNodeCommand {
-  static async execute () {
-    ProcessManager.connect((err) => {
+  static async execute ({ nearClientValidateHeaderMode }) {
+    ProcessManager.connect(err => {
       if (err) {
         console.log(
           'Unable to connect to the ProcessManager daemon! Please retry.'
@@ -23,9 +23,10 @@ class StartGanacheNodeCommand {
     })
     return {
       ethNodeUrl: 'http://localhost:9545',
-      ethMasterSk: '0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200',
+      ethMasterSk:
+        '0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200',
       nearClientValidateHeader: 'false',
-      nearClientValidateHeaderMode: 'ethash'
+      nearClientValidateHeaderMode: nearClientValidateHeaderMode
     }
   }
 }
