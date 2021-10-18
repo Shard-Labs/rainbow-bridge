@@ -14,14 +14,14 @@ const {
   backoff,
   nearJsonContractFunctionCall
 } = require('rainbow-bridge-utils')
-const { NearMintableToken } = require('./near-mintable-token')
+const { NearMintableNft } = require('./near-mintable-nft')
 
 let initialCmd
 const txLogFilename =
   Date.now() +
   '-' +
   crypto.randomBytes(8).toString('hex') +
-  '-transfer-eth-erc20-from-near.log.json'
+  '-transfer-eth-erc721-from-near.log.json'
 
 class TransferEthERC721FromNear {
   static showRetryAndExit () {
@@ -80,7 +80,7 @@ class TransferEthERC721FromNear {
         nearErc721Account,
         nearSenderAccount,
         'withdraw',
-        { tokenId: tokenId, recipient: ethReceiverAddress },
+        { token_id: tokenId, recipient: ethReceiverAddress },
         new BN('300000000000000'),
         new BN(1)
       )
@@ -210,15 +210,15 @@ class TransferEthERC721FromNear {
           await sleep(delay * 1000)
         }
       }
-      console.log(`Withdrawn ${JSON.stringify(tokenId)}`)
-      const newBalance = await backoff(10, () =>
-        nearTokenContract.ft_balance_of({
-          account_id: nearSenderAccountId
-        })
-      )
-      console.log(
-        `Balance of ${nearSenderAccountId} after withdrawing: ${newBalance}`
-      )
+      // console.log(`Withdrawn ${JSON.stringify(tokenId)}`)
+      // const newBalance = await backoff(10, () =>
+      //   nearTokenContract.ft_balance_of({
+      //     account_id: nearSenderAccountId
+      //   })
+      // )
+      // console.log(
+      //   `Balance of ${nearSenderAccountId} after withdrawing: ${newBalance}`
+      // )
       TransferEthERC721FromNear.recordTransferLog({
         finished: 'wait-block',
         clientBlockHashB58: clientBlockHash,
@@ -303,7 +303,6 @@ class TransferEthERC721FromNear {
       await proverContract.methods
         .proveOutcome(borshProofRes, clientBlockHeight)
         .call()
-
       // const oldBalance = await ethERC721Contract.methods
       //   .balanceOf(ethReceiverAddress)
       //   .call()
@@ -312,7 +311,7 @@ class TransferEthERC721FromNear {
       // )
       await robustWeb3.callContract(
         ethNftLockerContract,
-        'unlockToken',
+        'finishNearToEthMigration',
         [borshProofRes, clientBlockHeight],
         {
           from: ethMasterAccount,
@@ -321,11 +320,12 @@ class TransferEthERC721FromNear {
           gasPrice: new BN(await robustWeb3.web3.eth.getGasPrice()).mul(new BN(ethGasMultiplier))
         }
       )
+      console.log('NFT unlocked')
       // const newBalance = await ethERC721Contract.methods
       //   .balanceOf(ethReceiverAddress)
       //   .call()
       // console.log(
-      //   `ERC20 balance of ${ethReceiverAddress} after the transfer: ${newBalance}`
+      //   `ERC721 balance of ${ethReceiverAddress} after the transfer: ${newBalance}`
       // )
     } catch (txRevertMessage) {
       console.log('Failed to unlock.')
@@ -355,6 +355,26 @@ class TransferEthERC721FromNear {
     ethErc721Address,
     ethGasMultiplier
   }) {
+    ethErc721AbiPath = '/home/idir/Desktop/shardlabs/rainbow-bridge/node_modules/rainbow-non-fungible-token-connector/res/ERC721.full.abi'
+    console.log(tokenId)
+    console.log(nearSenderAccountId)
+    console.log(ethReceiverAddress)
+    console.log(nearNetworkId)
+    console.log(nearNodeUrl)
+    console.log(nearSenderSk)
+    console.log(nearErc721Account)
+    console.log(ethNodeUrl)
+    console.log(ethMasterSk)
+    console.log(ethClientArtifactPath)
+    console.log(ethClientAddress)
+    console.log(ethProverArtifactPath)
+    console.log(ethProverAddress)
+    console.log(ethNftLockerAbiPath)
+    console.log(ethNftLockerAddress)
+    console.log(ethErc721AbiPath)
+    console.log(ethErc721Address)
+    console.log(ethGasMultiplier)
+
     initialCmd = args.join(' ')
     ethReceiverAddress = remove0x(ethReceiverAddress)
     const keyStore = new nearAPI.keyStores.InMemoryKeyStore()
@@ -381,12 +401,11 @@ class TransferEthERC721FromNear {
       nearErc721Account,
       {
         changeMethods: ['new', 'withdraw'],
-        // TODO ft_balance_of
         viewMethods: []
       }
     )
 
-    const nearTokenContractBorsh = new NearMintableToken(
+    const nearTokenContractBorsh = new NearMintableNft(
       nearSenderAccount,
       nearErc721Account
     )
@@ -427,6 +446,7 @@ class TransferEthERC721FromNear {
         handleRevert: true
       }
     )
+    console.log('*******---------*********')
 
     const ethERC721Contract = new web3.eth.Contract(
       JSON.parse(fs.readFileSync(ethErc721AbiPath)),

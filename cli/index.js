@@ -123,7 +123,7 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'num-confirmations',
   'Number of confirmations blocks on Ethereum that applications can use to consider the transaction safe.',
-  30
+  3
 )
 RainbowConfig.declareOption(
   'near-client-trusted-signer',
@@ -289,12 +289,12 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'eth-client-lock-duration',
   'The challenge window during which anyone can challenge an incorrect ED25519 signature of the Near block, in EthClient, in seconds.',
-  14400
+  10
 )
 RainbowConfig.declareOption(
   'eth-client-replace-duration',
   'Minimum time difference required to replace a block during challenge period, in EthClient, in seconds.',
-  18000
+  20
 )
 RainbowConfig.declareOption(
   'eth-client-address',
@@ -332,7 +332,7 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'near2eth-relay-max-delay',
   "Maximum number of seconds to wait if the relay can't submit a block right away.",
-  '600'
+  '10'
 )
 RainbowConfig.declareOption(
   'near2eth-relay-error-delay',

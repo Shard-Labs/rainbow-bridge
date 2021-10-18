@@ -42,9 +42,10 @@ then
     if [[ -z "$NEAR_CHAIN_ID" ]]; then
       NEAR_CHAIN_ID=testnet
     fi
-    NEAR_RELEASE=$(curl https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/$NEAR_CHAIN_ID/latest_release)
-    NEAR_DEPLOY=$(curl https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/$NEAR_CHAIN_ID/latest_deploy)
-    NEAR_CORE_BINARY_URL="https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore/Linux/$NEAR_RELEASE/$NEAR_DEPLOY/neard"
+    # NEAR_RELEASE=$(curl https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/$NEAR_CHAIN_ID/latest_release)
+    NEAR_RELEASE=1.21.0
+    # NEAR_DEPLOY=$(curl https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/$NEAR_CHAIN_ID/latest_deploy)
+    NEAR_CORE_BINARY_URL="https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore/Linux/$NEAR_RELEASE/neard"
     NEAR_CORE_BINARY_DIR="$CORE_SRC/target/debug"
     NEAR_CORE_BINARY_PATH="$NEAR_CORE_BINARY_DIR/neard"
     mkdir -p $NEAR_CORE_BINARY_DIR

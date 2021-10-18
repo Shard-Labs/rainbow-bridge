@@ -16,6 +16,7 @@ const {
   logFromWeb3
 } = require('rainbow-bridge-eth2near-block-relay')
 const { NearMintableNft } = require('./near-mintable-nft')
+const { getEthBlock, web3BlockToRlp } = require('../../eth2near/eth2near-block-relay/eth-on-near-client')
 
 let initialCmd
 const txLogFilename =
@@ -86,7 +87,7 @@ class TransferETHERC721ToNear {
       )
       console.log(transaction)
       const lockedEvent = transaction.events.Locked
-      console.log('Success tranfer to locker')
+      console.log('Success transfer to locker')
       TransferETHERC721ToNear.recordTransferLog({
         finished: 'lock',
         lockedEvent
@@ -98,15 +99,19 @@ class TransferETHERC721ToNear {
     }
   }
 
-  static async findProof ({ extractor, lockedEvent, web3 }) {
+  static async findProof ({ extractor, lockedEvent, web3, robustWeb3 }) {
     const receipt = await extractor.extractReceipt(lockedEvent.transactionHash)
     const block = await extractor.extractBlock(receipt.blockNumber)
     const tree = await extractor.buildTrie(block)
-    const proof = await extractor.extractProof(
-      web3,
-      block,
+
+    // include EIP1559 metadata with the block header
+    const blockData = await getEthBlock(block.number, robustWeb3)
+    const blockRlp = web3BlockToRlp(blockData, 'local')
+
+    const proof = await extractor.extractProofFromRLP(
       tree,
-      receipt.transactionIndex
+      receipt.transactionIndex,
+      blockRlp
     )
     let txLogIndex = -1
 
@@ -379,7 +384,8 @@ class TransferETHERC721ToNear {
       await TransferETHERC721ToNear.findProof({
         extractor,
         lockedEvent: transferLog.lockedEvent,
-        web3
+        web3,
+        robustWeb3
       })
       transferLog = TransferETHERC721ToNear.loadTransferLog()
     }

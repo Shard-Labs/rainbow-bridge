@@ -23,7 +23,13 @@ const { exit } = require('process')
 // Please follow the agreement when adding new functions. XOXO
 
 // Change
-async function mintErc20 ({ ethAccountAddress, amount, ethNodeUrl, ethErc20Address, ethErc20AbiPath }) {
+async function mintErc20 ({
+  ethAccountAddress,
+  amount,
+  ethNodeUrl,
+  ethErc20Address,
+  ethErc20AbiPath
+}) {
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
   const web3 = robustWeb3.web3
   try {
@@ -31,7 +37,9 @@ async function mintErc20 ({ ethAccountAddress, amount, ethNodeUrl, ethErc20Addre
       JSON.parse(fs.readFileSync(ethErc20AbiPath)),
       remove0x(ethErc20Address)
     )
-    await ethContract.methods.mint(ethAccountAddress, Number(amount)).send({ from: ethAccountAddress, gas: 5000000 })
+    await ethContract.methods
+      .mint(ethAccountAddress, Number(amount))
+      .send({ from: ethAccountAddress, gas: 5000000 })
     console.log('OK')
   } catch (error) {
     console.log('Failed', error.toString())
@@ -40,7 +48,12 @@ async function mintErc20 ({ ethAccountAddress, amount, ethNodeUrl, ethErc20Addre
   exit(0)
 }
 
-async function mintErc721 ({ ethAccountAddress, ethNodeUrl, ethErc721Address, ethErc721AbiPath }) {
+async function mintErc721 ({
+  ethAccountAddress,
+  ethNodeUrl,
+  ethErc721Address,
+  ethErc721AbiPath
+}) {
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
   const web3 = robustWeb3.web3
   try {
@@ -48,7 +61,9 @@ async function mintErc721 ({ ethAccountAddress, ethNodeUrl, ethErc721Address, et
       JSON.parse(fs.readFileSync(ethErc721AbiPath)),
       remove0x(ethErc721Address)
     )
-    await ethContract.methods.mint().send({ from: ethAccountAddress, gas: 5000000 })
+    await ethContract.methods
+      .mint()
+      .send({ from: ethAccountAddress, gas: 5000000 })
     console.log('OK')
   } catch (error) {
     console.log('Failed', error.toString())
@@ -74,7 +89,12 @@ function getAddressBySecretKey ({ ethSecretKey, ethNodeUrl }) {
 }
 
 // View
-async function getErc20Balance ({ ethAccountAddress, ethNodeUrl, ethErc20Address, ethErc20AbiPath }) {
+async function getErc20Balance ({
+  ethAccountAddress,
+  ethNodeUrl,
+  ethErc20Address,
+  ethErc20AbiPath
+}) {
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
   const web3 = robustWeb3.web3
   try {
@@ -82,7 +102,9 @@ async function getErc20Balance ({ ethAccountAddress, ethNodeUrl, ethErc20Address
       JSON.parse(fs.readFileSync(ethErc20AbiPath)),
       remove0x(ethErc20Address)
     )
-    const balance = await ethContract.methods.balanceOf(remove0x(ethAccountAddress)).call()
+    const balance = await ethContract.methods
+      .balanceOf(remove0x(ethAccountAddress))
+      .call()
     console.log(balance)
   } catch (error) {
     console.log('Failed', error.toString())
@@ -92,7 +114,14 @@ async function getErc20Balance ({ ethAccountAddress, ethNodeUrl, ethErc20Address
 }
 
 // Change
-async function ethToNearApprove ({ ethAccountAddress, amount, ethNodeUrl, ethErc20Address, ethErc20AbiPath, ethLockerAddress }) {
+async function ethToNearApprove ({
+  ethAccountAddress,
+  amount,
+  ethNodeUrl,
+  ethErc20Address,
+  ethErc20AbiPath,
+  ethLockerAddress
+}) {
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
   const web3 = robustWeb3.web3
   try {
@@ -118,7 +147,15 @@ async function ethToNearApprove ({ ethAccountAddress, amount, ethNodeUrl, ethErc
 }
 
 // Change
-async function ethToNearLock ({ ethAccountAddress, amount, nearAccountName, ethNodeUrl, ethErc20Address, ethLockerAbiPath, ethLockerAddress }) {
+async function ethToNearLock ({
+  ethAccountAddress,
+  amount,
+  nearAccountName,
+  ethNodeUrl,
+  ethErc20Address,
+  ethLockerAbiPath,
+  ethLockerAddress
+}) {
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
   const web3 = robustWeb3.web3
   try {
@@ -166,7 +203,9 @@ async function getClientBlockHeightHash ({
     const clientState = await clientContract.methods.bridgeState().call()
     const clientBlockHash = bs58.encode(
       toBuffer(
-        await clientContract.methods.blockHashes(clientState.currentHeight).call()
+        await clientContract.methods
+          .blockHashes(clientState.currentHeight)
+          .call()
       )
     )
     console.log(clientState.currentHeight, clientBlockHash)
@@ -190,7 +229,9 @@ async function nearToEthUnlock ({
   const robustWeb3 = new RobustWeb3(ethNodeUrl)
   const web3 = robustWeb3.web3
   try {
-    const ethMasterAccount = web3.eth.accounts.privateKeyToAccount(normalizeEthKey(ethMasterSk)).address
+    const ethMasterAccount = web3.eth.accounts.privateKeyToAccount(
+      normalizeEthKey(ethMasterSk)
+    ).address
     const ethTokenLockerContract = new web3.eth.Contract(
       JSON.parse(fs.readFileSync(ethLockerAbiPath)),
       ethLockerAddress
@@ -205,7 +246,9 @@ async function nearToEthUnlock ({
         from: ethMasterAccount,
         gas: 5000000,
         handleRevert: true,
-        gasPrice: Number(await robustWeb3.web3.eth.getGasPrice() * ethGasMultiplier)
+        gasPrice: Number(
+          (await robustWeb3.web3.eth.getGasPrice()) * ethGasMultiplier
+        )
       }
     )
     console.log('OK')
@@ -283,11 +326,11 @@ async function getBridgeNftOnNearBalance ({
       nearErc721Account,
       {
         changeMethods: [],
-        viewMethods: ['nft_metadata']
+        viewMethods: ['nft_token']
       }
     )
 
-    const balance = await nearTokenContract.nft_metadata()
+    const balance = await nearTokenContract.nft_token({ token_id: '1' })
     console.log(
       `[Rainbow-Bridge on Near] Balance of ${nearReceiverAccount} is ${balance}`
     )

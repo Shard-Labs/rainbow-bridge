@@ -59,6 +59,20 @@ class EthProofExtractor {
     }
   }
 
+  async extractProofFromRLP (tree, transactionIndex, blockRlp) {
+    const [, , stack] = await promisfy(
+      tree.findPath,
+      tree
+    )(encode(transactionIndex))
+
+    // Correctly compose and encode the header.
+    return {
+      header_rlp: blockRlp,
+      receiptProof: Proof.fromStack(stack),
+      txIndex: transactionIndex
+    }
+  }
+
   destroy () {
     if (this.web3.currentProvider.connection && this.web3.currentProvider.connection.close) {
       // Only WebSocket provider has close, HTTPS don't
