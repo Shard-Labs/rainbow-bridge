@@ -23,5 +23,6 @@
 	"ethAdminAddress": "0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39",
 	"nearTokenFactorySk": "ed25519:5sdVyUoFUDg127HvWcjQX3tz5NpysWU6HTeMEL3j3bFSuKWNjwW4NffaqAaJuH9Zi9P4SJcb1wbJjfDFaNzLztnr",
 	"ethErc20Address": "0x4bbad5810a29cd5144ca3b6ca15db3664770f604",
-	"nearErc20Account": "4bbad5810a29cd5144ca3b6ca15db3664770f604.n0fac.testnet"
+	"nearErc20Account": "4bbad5810a29cd5144ca3b6ca15db3664770f604.n0fac.testnet",
+	"near2ethRelayMaxDelay": "3600"
 }
