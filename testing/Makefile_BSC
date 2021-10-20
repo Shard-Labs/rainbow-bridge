@@ -85,7 +85,9 @@ start-relayer:
 	cli/index.js start eth2near-relay \
 		--gas-per-transaction ${GAS_PER_TRANSACTION} \
 		--total-submit-block ${TOTAL_SUBMIT_BLOCK}
-	cli/index.js start near2eth-relay --eth-master-sk ${ETH_MASTER_SK}
+	cli/index.js start near2eth-relay \
+		--eth-master-sk ${ETH_MASTER_SK} \
+		--near2eth-relay-max-delay ${NEAR2ETH_RELAY_MAX_DELAY}
 	cli/index.js start bridge-watchdog --eth-master-sk ${ETH_MASTER_SK_2}
 	pm2 logs
 
