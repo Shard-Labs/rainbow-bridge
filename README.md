@@ -22,6 +22,7 @@
 - [Using Bridge on Testnet](#using-bridge-on-testnet)
 - [Deploying and Using Locally](#deploying-and-using-locally)
 - [Contract Development Workflow](#contract-development-workflow)
+- [BSC testnet local deployment](#bsc-testnet-local-deployment)
 
 ## Pre-requisites
 
@@ -405,3 +406,11 @@ docker-compose -f docker-compose-dev.yml up -e MASTER_SK=<key> -e ...
 docker-compose -f docker-compose-prod.yml instead
 ```
 -->
+
+## BSC testnet local deployment
+
+If you want to run the testnet BSC bridge locally, follow `.docker.bsc/testnet/README.md`:
+```
+cd .docker.bsc/testnet
+make help
+```
