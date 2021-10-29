@@ -409,8 +409,34 @@ docker-compose -f docker-compose-prod.yml instead
 
 ## BSC testnet local deployment
 
-If you want to run the testnet BSC bridge locally, follow `.docker.bsc/testnet/README.md`:
+### Pre-requisites
+- docker
+- docker-compose
+- make
+
+### START all relayer services
+It will build the docker images, then, run the relayers as `docker-compose` services.
 ```
-cd .docker.bsc/testnet
-make help
+make docker-start-relayer
+```
+
+### Services status
+```
+make docker-status
+```
+
+### Services logs
+```
+make docker-logs-all
+```
+
+### STOP all relayer services
+```
+make docker-stop-all
+```
+
+### Update services
+Run this when source code updated.
+```
+make docker-update
 ```
