@@ -14,7 +14,7 @@ services:
     image: near:latest
     container_name: near2eth-relay
     restart: always
-    command: cli/index.js start near2eth-relay --eth-master-sk ${ETH_MASTER_SK} --near2eth-relay-max-delay ${NEAR2ETH_RELAY_MAX_DELAY} --daemon false
+    command: cli/index.js start near2eth-relay --eth-master-sk ${ETH_MASTER_SK} --near2eth-relay-min-delay ${NEAR2ETH_RELAY_MIN_DELAY} --daemon false
 
 
   bridge-watchdog:
