@@ -4,7 +4,7 @@ services:
   eth2near-relay:
     build:
       context: ../
-      dockerfile: ./.docker.testnet/Dockerfile.bsc-deploy
+      dockerfile: ./.docker.bsc/testnet/Dockerfile.bsc-deploy
     image: near:latest
     container_name: eth2near-relay
     restart: always

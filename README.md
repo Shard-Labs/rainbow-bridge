@@ -22,7 +22,7 @@
 - [Using Bridge on Testnet](#using-bridge-on-testnet)
 - [Deploying and Using Locally](#deploying-and-using-locally)
 - [Contract Development Workflow](#contract-development-workflow)
-- [BSC testnet local deployment](#bsc-testnet-local-deployment)
+- [BSC deployment](#bsc-deployment)
 
 ## Pre-requisites
 
@@ -407,36 +407,39 @@ docker-compose -f docker-compose-prod.yml instead
 ```
 -->
 
-## BSC testnet local deployment
+## BSC deployment
 
 ### Pre-requisites
 - docker
 - docker-compose
 - make
 
+### NOTE
+- The value of `<NETWORK>` could be `local`, `testnet` or `mainnet`!
+
 ### START all relayer services
 It will build the docker images, then, run the relayers as `docker-compose` services.
 ```
-make docker-start-relayer
+make bsc-<NETWORK>-start-relayer
 ```
 
 ### Services status
 ```
-make docker-status
+make bsc-<NETWORK>-status
 ```
 
 ### Services logs
 ```
-make docker-logs-all
+make bsc-<NETWORK>-logs-all
 ```
 
 ### STOP all relayer services
 ```
-make docker-stop-all
+make bsc-<NETWORK>-stop-all
 ```
 
 ### Update services
 Run this when source code updated.
 ```
-make docker-update
+make bsc-<NETWORK>-update
 ```

@@ -48,4 +48,4 @@ COPY ./ ./
 RUN yarn && \
     yarn install
 
-RUN bash .docker.bsc/testnet/docker-init.sh
+RUN bash .docker.bsc/local/docker-init.sh
