@@ -3,7 +3,7 @@ version: '3.7'
 services:
   eth2near-relay:
     build:
-      context: ../
+      context: ../../
       dockerfile: ./.docker.bsc/testnet/Dockerfile.bsc-deploy
     image: near:latest
     container_name: eth2near-relay
