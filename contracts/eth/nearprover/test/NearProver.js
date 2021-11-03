@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { ethers } = require('hardhat');
+const { ethers, upgrades } = require('hardhat');
 const { borshifyOutcomeProof } = require(`rainbow-bridge-lib/rainbow/borsh`);
 const fs = require('fs').promises;
 const { computeMerkleRoot } = require('../utils/utils');
@@ -8,11 +8,14 @@ let NearProver, NearBridgeMock;
 
 beforeEach(async function () {
     NearBridgeMock = await (await ethers.getContractFactory('NearBridgeMock')).deploy();
-    NearProver = await (await ethers.getContractFactory('NearProver')).deploy(
+
+    const NearProverFactory = await ethers.getContractFactory('NearProver')
+    NearProver = await upgrades.deployProxy(NearProverFactory, [
         NearBridgeMock.address,
         ethers.constants.AddressZero,
         0
-    );
+    ]);
+    await NearProver.deployed();
 });
 
 async function testProof(merkleRoot, height, proofPath) {

@@ -6,19 +6,23 @@ import "./bridge/INearBridge.sol";
 import "./bridge/NearDecoder.sol";
 import "./ProofDecoder.sol";
 import "./INearProver.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract NearProver is INearProver, AdminControlled {
+contract NearProver is INearProver, AdminControlled, UUPSUpgradeable {
     using Borsh for Borsh.Data;
     using NearDecoder for Borsh.Data;
     using ProofDecoder for Borsh.Data;
 
     INearBridge public bridge;
 
-    constructor(
+    function initialize(
         INearBridge _bridge,
         address _admin,
         uint _pausedFlags
-    ) AdminControlled(_admin, _pausedFlags) {
+    ) public initializer {
+        __ADMIN_CONTROLE_INIT(_admin, _pausedFlags);
+        __UUPSUpgradeable_init();
+
         bridge = _bridge;
     }
 
@@ -70,4 +74,6 @@ contract NearProver is INearProver, AdminControlled {
             }
         }
     }
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyAdmin {}
 }

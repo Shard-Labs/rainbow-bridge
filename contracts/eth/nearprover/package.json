@@ -9,6 +9,7 @@
     "license": "MIT",
     "devDependencies": {
         "@nomiclabs/hardhat-ethers": "^2.0.1",
+        "@openzeppelin/hardhat-upgrades": "^1.11.0",
         "chai": "^4.3.3",
         "eslint": "^6.3.0",
         "eslint-config-standard": "^14.1.0",
@@ -34,5 +35,8 @@
         "lint:sol:fix": "solium -d . --fix",
         "lint": "yarn lint:js && yarn lint:sol",
         "lint:fix": "yarn lint:js:fix && yarn lint:sol:fix"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts-upgradeable": "^4.3.2"
     }
 }

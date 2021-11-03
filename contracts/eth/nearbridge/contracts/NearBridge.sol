@@ -5,8 +5,9 @@ import "./AdminControlled.sol";
 import "./INearBridge.sol";
 import "./NearDecoder.sol";
 import "./Ed25519.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract NearBridge is INearBridge, AdminControlled {
+contract NearBridge is INearBridge, AdminControlled, UUPSUpgradeable {
     using Borsh for Borsh.Data;
     using NearDecoder for Borsh.Data;
 
@@ -28,7 +29,7 @@ contract NearBridge is INearBridge, AdminControlled {
     uint256 public lockDuration;
     // replaceDuration is in nanoseconds, because it is a difference between NEAR timestamps.
     uint256 public replaceDuration;
-    Ed25519 immutable edwards;
+    Ed25519 private edwards;
 
     Epoch[3] epochs;
     uint curEpoch;
@@ -53,14 +54,17 @@ contract NearBridge is INearBridge, AdminControlled {
     mapping(uint64 => bytes32) blockMerkleRoots_;
     mapping(address => uint256) public override balanceOf;
 
-    constructor(
+    function initialize(
         Ed25519 ed,
         uint256 lockEthAmount_,
         uint256 lockDuration_,
         uint256 replaceDuration_,
         address admin_,
         uint256 pausedFlags_
-    ) AdminControlled(admin_, pausedFlags_) {
+    ) public initializer {
+        __ADMIN_CONTROLE_INIT(admin_, pausedFlags_);
+        __UUPSUpgradeable_init();
+
         require(replaceDuration_ > lockDuration_ * 1000000000);
         edwards = ed;
         lockEthAmount = lockEthAmount_;
@@ -99,12 +103,19 @@ contract NearBridge is INearBridge, AdminControlled {
 
     function checkBlockProducerSignatureInHead(uint signatureIndex) public view override returns (bool) {
         // Shifting by a number >= 256 returns zero.
-        require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
+        // require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
+        if ((untrustedSignatureSet & (1 << signatureIndex)) != 0) {
+            return true;
+        }
         unchecked {
             Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
             NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
-            bytes memory message =
-                abi.encodePacked(uint8(0), untrustedNextHash, Utils.swapBytes8(untrustedHeight + 2), bytes23(0));
+            bytes memory message = abi.encodePacked(
+                uint8(0),
+                untrustedNextHash,
+                Utils.swapBytes8(untrustedHeight + 2),
+                bytes23(0)
+            );
             (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
             return edwards.check(untrustedEpoch.keys[signatureIndex], signature.r, signature.s, arg1, arg2);
         }
@@ -252,6 +263,12 @@ contract NearBridge is INearBridge, AdminControlled {
             }
             lastSubmitter = msg.sender;
             lastValidAt = block.timestamp + lockDuration;
+
+            // validate producer signature in head
+            uint256 numBlockProducers = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch].numBPs;
+            for (uint256 idx = 0; idx < numBlockProducers; idx++) {
+                require(checkBlockProducerSignatureInHead(idx), "Invalid signature");
+            }
         }
     }
 
@@ -292,4 +309,6 @@ contract NearBridge is INearBridge, AdminControlled {
             res = untrustedMerkleRoot;
         }
     }
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyAdmin {}
 }

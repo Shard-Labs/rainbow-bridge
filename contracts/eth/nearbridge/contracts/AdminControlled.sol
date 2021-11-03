@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8;
 
-contract AdminControlled {
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+contract AdminControlled is Initializable{
     address public admin;
     uint public paused;
 
-    constructor(address _admin, uint flags) {
+    function __ADMIN_CONTROLE_INIT(address _admin, uint flags) public initializer {
         admin = _admin;
         paused = flags;
     }
@@ -47,9 +49,9 @@ contract AdminControlled {
 
     function adminReceiveEth() public payable onlyAdmin {}
 
-    function adminDelegatecall(address target, bytes memory data) public payable onlyAdmin returns (bytes memory) {
-        (bool success, bytes memory rdata) = target.delegatecall(data);
-        require(success);
-        return rdata;
-    }
+    // function adminDelegatecall(address target, bytes memory data) public payable onlyAdmin returns (bytes memory) {
+    //     (bool success, bytes memory rdata) = target.delegatecall(data);
+    //     require(success);
+    //     return rdata;
+    // }
 }
