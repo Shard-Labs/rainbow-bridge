@@ -1,0 +1,246 @@
+idir@ubuntu:~/Desktop/shardlabs/rainbow-bridge$ make transfer-eth-erc721-to-near 
+cli/index.js TESTING transfer-eth-erc721-to-near \
+	--tokenId 2 \
+	--eth-sender-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200 \
+	--near-receiver-account node0 \
+	--near-master-account nearnftfactory \
+
+args [
+  'transfer-eth-erc721-to-near',
+  '--tokenId',
+  '2',
+  '--eth-sender-sk',
+  '0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200',
+  '--near-receiver-account',
+  'node0',
+  '--near-master-account',
+  'nearnftfactory'
+]
+tokenId 2
+ethSenderSk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501200
+nearReceiverAccount node0
+nearMasterAccountId nearnftfactory
+nearNetworkId local
+nearNodeUrl http://localhost:3030
+nearMasterSk ed25519:3D4YudUQRE39Lc4JHghuB5WM8kbgDDa34mnrEP5DdTApVH81af7e2dWgNPEaiQfdJnZq1CNPp5im4Rg5b733oiMP
+nearNftFactoryAccount nearnftfactory
+nearClientAccount rainbow_bridge_eth_on_near_client
+nearErc721Account c290775d96c39288d33419290da2ae490a1bc99b.nearnftfactory
+ethNodeUrl http://localhost:9545
+ethErc721AbiPath /home/idir/Desktop/shardlabs/rainbow-bridge/node_modules/rainbow-non-fungible-token-connector/res/ERC721.full.abi
+ethErc721Address 0xc290775d96c39288d33419290da2ae490a1bc99b
+ethNftLockerAbiPath /home/idir/Desktop/shardlabs/rainbow-bridge/node_modules/rainbow-non-fungible-token-connector/res/ERC721Locker.full.abi
+ethNftLockerAddress 0xe3c3a9e43f46be220317028c3aff941c7e218e0d
+Coudn't find transfer log at  1636388666130-78e489f1-transfer-nft-erc721-from-near.log.json
+Using ETH address 0xc290775d96c39288d33419290da2ae490a1bc99b
+Balance:  1
+Approving nft transfer to 0xe3c3a9e43f46be220317028c3aff941c7e218e0d id: 2.
+Approved nft transfer.
+Transfer log found { finished: 'approve' }
+Transferring nft from the ERC721 account to the token locker account 2.
+{
+  transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+  transactionIndex: 0,
+  blockNumber: 359,
+  blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+  from: '0xdf08f82de32b8d460adbe8d72043e3a7e25a3b39',
+  to: '0xe3c3a9e43f46be220317028c3aff941c7e218e0d',
+  cumulativeGasUsed: 133662,
+  gasUsed: 133662,
+  contractAddress: null,
+  logsBloom: '0x04000400000000000000000200000000402000000000000000000000000000000000000000000000000000000000000000002000000000000000000000200000000000000000000000100008000000000000040000000000000000000000000004000000020000000002000000000800000008000000000000000010000000001100000000000000000000000000000000000080000000000000000000000000020000000000000000000100000000000000800000000000000000000100000000020002000000000000000000000000000000000000000000000000000020800010000000000000000000000002000000000000008000000000000000000000',
+  status: true,
+  effectiveGasPrice: '0x77359400',
+  type: '0x0',
+  events: {
+    '0': {
+      address: '0xC290775D96c39288d33419290DA2AE490a1bC99B',
+      blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+      blockNumber: 359,
+      logIndex: 0,
+      removed: false,
+      transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+      transactionIndex: 0,
+      id: 'log_ff912043',
+      returnValues: Result {},
+      event: undefined,
+      signature: null,
+      raw: [Object]
+    },
+    '1': {
+      address: '0xC290775D96c39288d33419290DA2AE490a1bC99B',
+      blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+      blockNumber: 359,
+      logIndex: 1,
+      removed: false,
+      transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+      transactionIndex: 0,
+      id: 'log_aaa065b5',
+      returnValues: Result {},
+      event: undefined,
+      signature: null,
+      raw: [Object]
+    },
+    Locked: {
+      address: '0xE3c3A9e43F46be220317028c3AfF941C7E218E0D',
+      blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+      blockNumber: 359,
+      logIndex: 2,
+      removed: false,
+      transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+      transactionIndex: 0,
+      id: 'log_c95ae932',
+      returnValues: [Result],
+      event: 'Locked',
+      signature: '0x26096914a269e686ac1af739190166a4b78a6797dcc1e634dd489588556a4a4f',
+      raw: [Object]
+    }
+  }
+}
+Success transfer to locker
+Transfer log found {
+  finished: 'lock',
+  lockedEvent: {
+    address: '0xE3c3A9e43F46be220317028c3AfF941C7E218E0D',
+    blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+    blockNumber: 359,
+    logIndex: 2,
+    removed: false,
+    transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+    transactionIndex: 0,
+    id: 'log_c95ae932',
+    returnValues: {
+      '0': '0xC290775D96c39288d33419290DA2AE490a1bC99B',
+      '1': '0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39',
+      '2': '2',
+      '3': 'node0',
+      '4': '',
+      token: '0xC290775D96c39288d33419290DA2AE490a1bC99B',
+      sender: '0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39',
+      tokenId: '2',
+      accountId: 'node0',
+      tokenUri: ''
+    },
+    event: 'Locked',
+    signature: '0x26096914a269e686ac1af739190166a4b78a6797dcc1e634dd489588556a4a4f',
+    raw: {
+      data: '0x000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000056e6f6465300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+      topics: [Array]
+    }
+  }
+}
+Transfer log found {
+  finished: 'find-proof',
+  proof: {
+    header_rlp: { type: 'Buffer', data: [Array] },
+    receiptProof: [ [Array] ],
+    txIndex: 0
+  },
+  log: {
+    address: '0xE3c3A9e43F46be220317028c3AfF941C7E218E0D',
+    blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+    blockNumber: 359,
+    data: '0x000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000056e6f6465300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+    logIndex: 2,
+    removed: false,
+    topics: [
+      '0x26096914a269e686ac1af739190166a4b78a6797dcc1e634dd489588556a4a4f',
+      '0x000000000000000000000000c290775d96c39288d33419290da2ae490a1bc99b',
+      '0x000000000000000000000000df08f82de32b8d460adbe8d72043e3a7e25a3b39'
+    ],
+    transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+    transactionIndex: 0,
+    id: 'log_c95ae932'
+  },
+  txLogIndex: 2,
+  receipt: {
+    transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+    transactionIndex: 0,
+    blockNumber: 359,
+    blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+    from: '0xdf08f82de32b8d460adbe8d72043e3a7e25a3b39',
+    to: '0xe3c3a9e43f46be220317028c3aff941c7e218e0d',
+    cumulativeGasUsed: 133662,
+    gasUsed: 133662,
+    contractAddress: null,
+    logs: [ [Object], [Object], [Object] ],
+    logsBloom: '0x04000400000000000000000200000000402000000000000000000000000000000000000000000000000000000000000000002000000000000000000000200000000000000000000000100008000000000000040000000000000000000000000004000000020000000002000000000800000008000000000000000010000000001100000000000000000000000000000000000080000000000000000000000000020000000000000000000100000000000000800000000000000000000100000000020002000000000000000000000000000000000000000000000000000020800010000000000000000000000002000000000000008000000000000000000000',
+    status: true,
+    effectiveGasPrice: '0x77359400',
+    type: '0x0'
+  },
+  lockedEvent: {
+    address: '0xE3c3A9e43F46be220317028c3AfF941C7E218E0D',
+    blockHash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+    blockNumber: 359,
+    logIndex: 2,
+    removed: false,
+    transactionHash: '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8',
+    transactionIndex: 0,
+    id: 'log_c95ae932',
+    returnValues: {
+      '0': '0xC290775D96c39288d33419290DA2AE490a1bC99B',
+      '1': '0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39',
+      '2': '2',
+      '3': 'node0',
+      '4': '',
+      token: '0xC290775D96c39288d33419290DA2AE490a1bC99B',
+      sender: '0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39',
+      tokenId: '2',
+      accountId: 'node0',
+      tokenUri: ''
+    },
+    event: 'Locked',
+    signature: '0x26096914a269e686ac1af739190166a4b78a6797dcc1e634dd489588556a4a4f',
+    raw: {
+      data: '0x000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000056e6f6465300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+      topics: [Array]
+    }
+  },
+  block: {
+    hash: '0x4b464c2e6b15f74464611ca840b135f5e5938b74f57070d224988f57576e99fa',
+    parentHash: '0x3cc6ada3b2d9260e6a9754ad415c53fb6fc1b8e75081d27e23104c19a64fae1f',
+    sha3Uncles: '0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347',
+    miner: '0x0000000000000000000000000000000000000000',
+    stateRoot: '0x7319ef998b86f38850c633c1d6ca65f7e9b297efdf3514c5af5bffe6fabafdd1',
+    transactionsRoot: '0x09cf79adb1df93eafb87b2dcdec6c35740f631ffc22b819d8b5a75f6cfaa224f',
+    receiptsRoot: '0xa55a8ad82c83667f0060dfacbd9031e7bf2ad24d40fe11ac30c65742e15b4952',
+    logsBloom: '0x00000400000000000000000200000000402000000000000000000000000000000000000000000000000000000000000000002000000000000000000000200000000000000000000000100008000000000000040000000000000000000000000004000000020000000002000000000800000008000000000000000010000000001100000000000000000000000000000000000080000000000000000000000000020000000000000000000100000000000000800000000000000000000100000000020002000000000000000000000000000000000000000000000000000020800010000000000000000000000002000000000000008000000000000000000000',
+    difficulty: '1',
+    number: 359,
+    gasLimit: 10000000,
+    gasUsed: 133662,
+    timestamp: 1636388686,
+    extraData: '0x',
+    mixHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+    nonce: '0x0000000000000000',
+    totalDifficulty: '360',
+    baseFeePerGas: '0x7',
+    size: 786,
+    transactions: [
+      '0xb966e18ce085422c5abfff00e99d6ccff9da89c101be06e61bfd078737f180e8'
+    ],
+    uncles: []
+  }
+}
+Transferring 2 tokens from 0xC290775D96c39288d33419290DA2AE490a1bC99B ERC721. From 0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39 sender to node0 recipient
+Near Client contract is currently at block 358. Waiting for block 359 to be confirmed. Sleeping for 10 sec.
+Near Client contract is currently at block 359. Waiting for block 359 to be confirmed. Sleeping for 10 sec.
+Near Client contract is currently at block 359. Waiting for block 359 to be confirmed. Sleeping for 10 sec.
+Near Client contract is currently at block 360. Waiting for block 359 to be confirmed. Sleeping for 10 sec.
+Near Client contract is currently at block 361. Waiting for block 359 to be confirmed. Sleeping for 10 sec.
+Transfer log found {
+  finished: 'block-safe',
+  proofLocker: {
+    log_index: 2,
+    log_entry_data: { type: 'Buffer', data: [Array] },
+    receipt_index: 0,
+    receipt_data: { type: 'Buffer', data: [Array] },
+    header_data: { type: 'Buffer', data: [Array] },
+    proof: [ [Object] ]
+  },
+  newOwnerId: 'node0'
+}
+TxHash 3M1pp8m36HaAvbDLVyxvgCnnKtpChpL8spfNsgbYR5xJ
+[]
+Transferred

@@ -940,7 +940,7 @@ RainbowConfig.addOptions(
     'near-nft-factory-account',
     'eth-node-url',
     'eth-master-sk',
-    'eth-erc20-abi-path',
+    'eth-erc721-abi-path',
     'eth-nft-locker-address',
     'eth-nft-locker-abi-path',
     'eth-client-artifact-path',

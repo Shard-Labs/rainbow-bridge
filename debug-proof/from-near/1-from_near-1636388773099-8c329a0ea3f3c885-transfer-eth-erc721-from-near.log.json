@@ -1,0 +1,121 @@
+{
+  "finished": "withdraw",
+  "txWithdraw": {
+    "receipts_outcome": [
+      {
+        "block_hash": "5eGmVUPTZWpARPEYLYHjkCg1QLotKn329uR97Ff5xpJ",
+        "id": "4Zz9pRPsADsqgZKU4sJ4uH2zw5RpcPePEdseNw9s5vYZ",
+        "outcome": {
+          "executor_id": "c290775d96c39288d33419290da2ae490a1bc99b.nearnftfactory",
+          "gas_burnt": 8956916449212,
+          "logs": [],
+          "receipt_ids": [
+            "EAVBDj27vUAzBz86C46545SrXF7nHwStUjCw1y7S9Nz9",
+            "Gjaq7fTnNH5eS9uvppMbmsmQ2yTUJnVRf3yz9Tkd14Fa"
+          ],
+          "status": {
+            "SuccessReceiptId": "EAVBDj27vUAzBz86C46545SrXF7nHwStUjCw1y7S9Nz9"
+          },
+          "tokens_burnt": "8956916449212000000000"
+        },
+        "proof": []
+      },
+      {
+        "block_hash": "Em3RWoERiCAfqXqRnXnuA1S77ygBhJrFdyoHohBvfPbs",
+        "id": "EAVBDj27vUAzBz86C46545SrXF7nHwStUjCw1y7S9Nz9",
+        "outcome": {
+          "executor_id": "nearnftfactory",
+          "gas_burnt": 3579122407172,
+          "logs": [],
+          "receipt_ids": ["2oCBiajsh8aPuh9iNzzWzQ35MxERDuQ1bYGPjLFaLLM7"],
+          "status": {
+            "SuccessValue": "AMKQd12Ww5KI0zQZKQ2irkkKG8mb3wj4LeMrjUYK2+jXIEPjp+JaOzkBAAAAMg=="
+          },
+          "tokens_burnt": "3579122407172000000000"
+        },
+        "proof": [
+          {
+            "direction": "Left",
+            "hash": "ANoQYqs83rVtXpPnQf1c2mcwM9nSkXxSrLJSLaXwDcyb"
+          },
+          {
+            "direction": "Right",
+            "hash": "3gNaFVmZYVEiCkKSSBsBhdHEUoVPy74QSGm6aKWk7W4Z"
+          }
+        ]
+      },
+      {
+        "block_hash": "ATk8aArq6y2ELaAhkWwUDaqmQWrkrhryTMz4yu3ANLMV",
+        "id": "2oCBiajsh8aPuh9iNzzWzQ35MxERDuQ1bYGPjLFaLLM7",
+        "outcome": {
+          "executor_id": "node0",
+          "gas_burnt": 223182562500,
+          "logs": [],
+          "receipt_ids": [],
+          "status": { "SuccessValue": "" },
+          "tokens_burnt": "0"
+        },
+        "proof": [
+          {
+            "direction": "Left",
+            "hash": "3SLsKgJK1qLjR2QPVDS5P4cEJaaixrdN4TvxA4guyN1V"
+          }
+        ]
+      },
+      {
+        "block_hash": "Em3RWoERiCAfqXqRnXnuA1S77ygBhJrFdyoHohBvfPbs",
+        "id": "Gjaq7fTnNH5eS9uvppMbmsmQ2yTUJnVRf3yz9Tkd14Fa",
+        "outcome": {
+          "executor_id": "node0",
+          "gas_burnt": 223182562500,
+          "logs": [],
+          "receipt_ids": [],
+          "status": { "SuccessValue": "" },
+          "tokens_burnt": "0"
+        },
+        "proof": [
+          {
+            "direction": "Left",
+            "hash": "5GtFQxZBokpsc7vY3JzJobMzQe885G9fRfgjHXSeB8Wt"
+          }
+        ]
+      }
+    ],
+    "status": {
+      "SuccessValue": "AMKQd12Ww5KI0zQZKQ2irkkKG8mb3wj4LeMrjUYK2+jXIEPjp+JaOzkBAAAAMg=="
+    },
+    "transaction": {
+      "actions": [
+        {
+          "FunctionCall": {
+            "args": "eyJ0b2tlbl9pZCI6IjIiLCJyZWNpcGllbnQiOiJEZjA4RjgyRGUzMkI4ZDQ2MGFkYkU4RDcyMDQzRTNhN2UyNUEzQjM5In0=",
+            "deposit": "1",
+            "gas": 300000000000000,
+            "method_name": "withdraw"
+          }
+        }
+      ],
+      "hash": "FdL4eYUkRQP1oGjrZsuzFdKmtuK4Eop6Bg3rKAU4H6GD",
+      "nonce": 109,
+      "public_key": "ed25519:7PGseFbWxvYVgZ89K1uTJKYoKetWs7BJtbyXDzfbAcqX",
+      "receiver_id": "c290775d96c39288d33419290da2ae490a1bc99b.nearnftfactory",
+      "signature": "ed25519:3Ub8WG4jUJPf19gRJa9gXPxDkaA71QaPhD5nnVZoiV5V21TJCtMST2iQqSgW1jSaqBiyRZHuQ6qMBeBWvyz7uptw",
+      "signer_id": "node0"
+    },
+    "transaction_outcome": {
+      "block_hash": "6WrUHuYWxZZPvx4YvD91iAa612EndQCnbTfrKTghDui7",
+      "id": "FdL4eYUkRQP1oGjrZsuzFdKmtuK4Eop6Bg3rKAU4H6GD",
+      "outcome": {
+        "executor_id": "node0",
+        "gas_burnt": 2428097638786,
+        "logs": [],
+        "receipt_ids": ["4Zz9pRPsADsqgZKU4sJ4uH2zw5RpcPePEdseNw9s5vYZ"],
+        "status": {
+          "SuccessReceiptId": "4Zz9pRPsADsqgZKU4sJ4uH2zw5RpcPePEdseNw9s5vYZ"
+        },
+        "tokens_burnt": "2428097638786000000000"
+      },
+      "proof": []
+    }
+  }
+}

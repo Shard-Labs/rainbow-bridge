@@ -131,16 +131,13 @@ class TransferEthERC721FromNear {
         throw new Error(`Invalid tx withdraw: ${JSON.stringify(txWithdraw)}`, e)
       }
 
+      // Get block when transaction was created.
       const txInitBlockHash = txWithdraw.transaction_outcome.block_hash
-      // Get block in which the receipt was processed.
       const initBlock = await backoff(10, () =>
         near.connection.provider.block({
           blockId: txInitBlockHash
         })
       )
-      console.log('-----------------------------------')
-      console.log(initBlock)
-      console.log('-----------------------------------')
 
       // Get block in which the receipt was processed.
       const receiptBlock = await backoff(10, () =>
@@ -168,7 +165,8 @@ class TransferEthERC721FromNear {
         txReceiptBlockHash,
         txReceiptId,
         outcomeBlock,
-        idType
+        idType,
+        initBlockHeight: initBlock.header.height
       })
     } catch (txRevertMessage) {
       console.log('Failed to find withdraw in block.')
@@ -185,7 +183,8 @@ class TransferEthERC721FromNear {
     nearTokenContract,
     tokenId,
     idType,
-    txReceiptId
+    txReceiptId,
+    initBlockHeight
   }) {
     // Wait for the block with the given receipt/transaction in Near2EthClient.
     try {
@@ -219,7 +218,7 @@ class TransferEthERC721FromNear {
                 (await robustWeb3.getBlock('latest')).timestamp
           delay = Math.max(delay, 1)
           console.log(
-            `Block ${outcomeBlockHeight} is not yet available. Sleeping for ${delay} seconds.`
+            `Tx init at: ${initBlockHeight} - Block ${outcomeBlockHeight} is not yet available. Sleeping for ${delay} seconds.`
           )
           await sleep(delay * 1000)
         }
@@ -314,7 +313,6 @@ class TransferEthERC721FromNear {
       // console.log(`proof: ${JSON.stringify(proofRes)}`);
       // console.log(`client height: ${clientBlockHeight.toString()}`);
       // console.log(`root: ${clientBlockMerkleRoot}`);
-      console.log('------------------------')
       await proverContract.methods
         .proveOutcome(borshProofRes, clientBlockHeight)
         .call()
@@ -324,7 +322,6 @@ class TransferEthERC721FromNear {
       // console.log(
       //   `ERC721 token number of ${ethReceiverAddress} before the transfer: ${oldBalance}`
       // )
-      console.log('------------------------')
       await robustWeb3.callContract(
         ethNftLockerContract,
         'finishNearToEthMigration',
@@ -371,26 +368,6 @@ class TransferEthERC721FromNear {
     ethErc721Address,
     ethGasMultiplier
   }) {
-    ethErc721AbiPath = '/home/idir/Desktop/shardlabs/rainbow-bridge/node_modules/rainbow-non-fungible-token-connector/res/ERC721.full.abi'
-    console.log(tokenId)
-    console.log(nearSenderAccountId)
-    console.log(ethReceiverAddress)
-    console.log(nearNetworkId)
-    console.log(nearNodeUrl)
-    console.log(nearSenderSk)
-    console.log(nearErc721Account)
-    console.log(ethNodeUrl)
-    console.log(ethMasterSk)
-    console.log(ethClientArtifactPath)
-    console.log(ethClientAddress)
-    console.log(ethProverArtifactPath)
-    console.log(ethProverAddress)
-    console.log(ethNftLockerAbiPath)
-    console.log(ethNftLockerAddress)
-    console.log(ethErc721AbiPath)
-    console.log(ethErc721Address)
-    console.log(ethGasMultiplier)
-
     initialCmd = args.join(' ')
     ethReceiverAddress = remove0x(ethReceiverAddress)
     const keyStore = new nearAPI.keyStores.InMemoryKeyStore()
@@ -462,7 +439,6 @@ class TransferEthERC721FromNear {
         handleRevert: true
       }
     )
-    console.log('*******---------*********')
 
     const ethERC721Contract = new web3.eth.Contract(
       JSON.parse(fs.readFileSync(ethErc721AbiPath)),
@@ -504,7 +480,8 @@ class TransferEthERC721FromNear {
         nearTokenContract,
         tokenId,
         idType: transferLog.idType,
-        txReceiptId: transferLog.txReceiptId
+        txReceiptId: transferLog.txReceiptId,
+        initBlockHeight: transferLog.initBlockHeight
       })
       transferLog = TransferEthERC721FromNear.loadTransferLog()
     }

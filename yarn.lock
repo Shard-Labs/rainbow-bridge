@@ -4625,9 +4625,9 @@ quick-lru@^5.1.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
-"rainbow-non-fungible-token-connector@https://github.com/Shard-Labs/rainbow-non-fungible-token-connector":
+"rainbow-non-fungible-token-connector@git://github.com/Shard-Labs/rainbow-non-fungible-token-connector.git#dev":
   version "0.0.0"
-  resolved "https://github.com/Shard-Labs/rainbow-non-fungible-token-connector#74a4359298b83d55cd8a2b49b9e83adaf692c45d"
+  resolved "git://github.com/Shard-Labs/rainbow-non-fungible-token-connector.git#44780d5f9820755e3faee3e796dbc8ca7f77ae67"
 
 rainbow-token-connector@near/rainbow-token-connector#7fb86958362fe8e4455ebbcdb00caac067eda2ff:
   version "0.0.0"

@@ -35,7 +35,7 @@
     "rainbow-bridge-watchdog": "1.0.0",
     "rainbow-bridge-testing": "1.0.0",
     "rainbow-token-connector": "near/rainbow-token-connector#7fb86958362fe8e4455ebbcdb00caac067eda2ff",
-    "rainbow-non-fungible-token-connector": "https://github.com/Shard-Labs/rainbow-non-fungible-token-connector",
+    "rainbow-non-fungible-token-connector": "git://github.com/Shard-Labs/rainbow-non-fungible-token-connector.git#dev",
     "request": "^2.88.2"
   }
 }
