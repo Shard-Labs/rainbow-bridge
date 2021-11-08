@@ -17,6 +17,7 @@ const {
 const { NearMintableNft } = require('./near-mintable-nft')
 
 let initialCmd
+let steps = 0
 const txLogFilename =
   Date.now() +
   '-' +
@@ -51,7 +52,9 @@ class TransferEthERC721FromNear {
   }
 
   static recordTransferLog (obj) {
+    steps++
     fs.writeFileSync(txLogFilename, JSON.stringify(obj))
+    fs.writeFileSync(steps + '-from_near-' + txLogFilename, JSON.stringify(obj))
   }
 
   static async withdraw ({
@@ -127,6 +130,17 @@ class TransferEthERC721FromNear {
       } catch (e) {
         throw new Error(`Invalid tx withdraw: ${JSON.stringify(txWithdraw)}`, e)
       }
+
+      const txInitBlockHash = txWithdraw.transaction_outcome.block_hash
+      // Get block in which the receipt was processed.
+      const initBlock = await backoff(10, () =>
+        near.connection.provider.block({
+          blockId: txInitBlockHash
+        })
+      )
+      console.log('-----------------------------------')
+      console.log(initBlock)
+      console.log('-----------------------------------')
 
       // Get block in which the receipt was processed.
       const receiptBlock = await backoff(10, () =>
@@ -300,6 +314,7 @@ class TransferEthERC721FromNear {
       // console.log(`proof: ${JSON.stringify(proofRes)}`);
       // console.log(`client height: ${clientBlockHeight.toString()}`);
       // console.log(`root: ${clientBlockMerkleRoot}`);
+      console.log('------------------------')
       await proverContract.methods
         .proveOutcome(borshProofRes, clientBlockHeight)
         .call()
@@ -309,6 +324,7 @@ class TransferEthERC721FromNear {
       // console.log(
       //   `ERC721 token number of ${ethReceiverAddress} before the transfer: ${oldBalance}`
       // )
+      console.log('------------------------')
       await robustWeb3.callContract(
         ethNftLockerContract,
         'finishNearToEthMigration',

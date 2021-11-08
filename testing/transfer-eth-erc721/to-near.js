@@ -19,6 +19,7 @@ const { NearMintableNft } = require('./near-mintable-nft')
 const { getEthBlock, web3BlockToRlp } = require('../../eth2near/eth2near-block-relay/eth-on-near-client')
 
 let initialCmd
+let steps = 0
 const txLogFilename =
   Date.now() +
   '-' +
@@ -223,7 +224,9 @@ class TransferETHERC721ToNear {
   }
 
   static recordTransferLog (obj) {
+    steps++
     fs.writeFileSync(txLogFilename, JSON.stringify(obj))
+    fs.writeFileSync(steps + '-to_near-' + txLogFilename, JSON.stringify(obj))
   }
 
   static parseBuffer (obj) {
