@@ -18,6 +18,10 @@ start-local-near-and-ganache-nodes:
 	cli/index.js start near-node
 	cli/index.js start ganache
 
+deploy-full-contracts-testnet:
+	cli/index.js init-eth-ed25519
+	cli/index.js init-eth-client
+
 # deploy contracts to testnets NEAR and BSC
 deploy-full-contracts:
 	cli/index.js init-near-contracts
@@ -27,6 +31,9 @@ deploy-full-contracts:
 	cli/index.js init-eth-erc721 --eth-master-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501201
 	cli/index.js init-eth-erc721-locker --eth-master-sk 0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501201
 	cli/index.js init-near-nft-factory
+
+start-relayer-testnet:
+	cli/index.js start near2eth-relay
 
 # start relayers
 start-relayer:

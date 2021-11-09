@@ -254,7 +254,7 @@ class Near2EthRelay {
 
             await clientContract.methods.addLightClientBlock(borshBlock).send({
               from: ethMasterAccount,
-              gas: 10000000,
+              gas: 20000000,
               handleRevert: true,
               gasPrice: gasPrice.mul(new BN(ethGasMultiplier))
             })
@@ -283,6 +283,7 @@ class Near2EthRelay {
           )
         }
         delay = Math.max(delay, minDelay)
+        delay = 10
         clientHeightGauge.set(Number(BigInt(bridgeState.currentHeight)))
         chainHeightGauge.set(Number(BigInt(lastBlock.inner_lite.height)))
 

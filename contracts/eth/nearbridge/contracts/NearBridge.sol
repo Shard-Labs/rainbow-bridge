@@ -5,7 +5,6 @@ import "./AdminControlled.sol";
 import "./INearBridge.sol";
 import "./NearDecoder.sol";
 import "./Ed25519.sol";
-import "hardhat/console.sol";
 
 contract NearBridge is INearBridge, AdminControlled {
     using Borsh for Borsh.Data;
@@ -89,31 +88,31 @@ contract NearBridge is INearBridge, AdminControlled {
         payable(msg.sender).transfer(amount);
     }
 
-    function challenge(address payable receiver, uint signatureIndex) public override pausable(PAUSED_CHALLENGE) {
-        require(block.timestamp < lastValidAt, "No block can be challenged at this time");
-        require(!checkBlockProducerSignatureInHead(signatureIndex), "Can't challenge valid signature");
+    // function challenge(address payable receiver, uint signatureIndex) public override pausable(PAUSED_CHALLENGE) {
+    //     require(block.timestamp < lastValidAt, "No block can be challenged at this time");
+    //     require(!checkBlockProducerSignatureInHead(signatureIndex), "Can't challenge valid signature");
 
-        balanceOf[lastSubmitter] = balanceOf[lastSubmitter] - lockEthAmount;
-        receiver.transfer(lockEthAmount / 2);
-        lastValidAt = 0;
-    }
+    //     balanceOf[lastSubmitter] = balanceOf[lastSubmitter] - lockEthAmount;
+    //     receiver.transfer(lockEthAmount / 2);
+    //     lastValidAt = 0;
+    // }
 
-    function checkBlockProducerSignatureInHead(uint signatureIndex) public view override returns (bool) {
-        // Shifting by a number >= 256 returns zero.
-        require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
-        unchecked {
-            Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
-            NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
-            bytes memory message = abi.encodePacked(
-                uint8(0),
-                untrustedNextHash,
-                Utils.swapBytes8(untrustedHeight + 2),
-                bytes23(0)
-            );
-            (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
-            return edwards.check(untrustedEpoch.keys[signatureIndex], signature.r, signature.s, arg1, arg2);
-        }
-    }
+    // function checkBlockProducerSignatureInHead(uint signatureIndex) public view override returns (bool) {
+    //     // Shifting by a number >= 256 returns zero.
+    //     require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
+    //     unchecked {
+    //         Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
+    //         NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
+    //         bytes memory message = abi.encodePacked(
+    //             uint8(0),
+    //             untrustedNextHash,
+    //             Utils.swapBytes8(untrustedHeight + 2),
+    //             bytes23(0)
+    //         );
+    //         (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
+    //         return edwards.check(untrustedEpoch.keys[signatureIndex], signature.r, signature.s, arg1, arg2);
+    //     }
+    // }
 
     // The first part of initialization -- setting the validators of the current epoch.
     function initWithValidators(bytes memory data) public override onlyAdmin {
@@ -249,7 +248,6 @@ contract NearBridge is INearBridge, AdminControlled {
                 
                     Epoch storage untrustedEpoch = epochs[fromNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
                     
-                    // nearBlock.next_bps.blockProducers
                     bytes memory message = abi.encodePacked(
                         uint8(0),
                         untrustedNextHash,
@@ -257,13 +255,11 @@ contract NearBridge is INearBridge, AdminControlled {
                         bytes23(0)
                     );
                     (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
-                    console.log("---------BEFORE--------------");
                     require(edwards.check(untrustedEpoch.keys[i], approval.signature.r, approval.signature.s, arg1, arg2), "Error edwards");
-                    console.log("---------AFTER--------------");
                 }
             }
 
-            untrustedSignatureSet = signatureSet;
+            // untrustedSignatureSet = signatureSet;
             untrustedNextEpoch = fromNextEpoch;
             if (fromNextEpoch) {
                 Epoch storage nextEpoch = epochs[(curEpoch + 2) % 3];

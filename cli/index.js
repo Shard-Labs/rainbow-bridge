@@ -284,7 +284,7 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'eth-client-lock-eth-amount',
   'Amount of Ether that should be temporarily locked when submitting a new header to EthClient, in wei.',
-  '100000000000000000000'
+  '1000000000000'
 )
 RainbowConfig.declareOption(
   'eth-client-lock-duration',

@@ -29,9 +29,9 @@ contract NearBridgeMock is INearBridge {
 
     function addLightClientBlock(bytes calldata) external override {}
 
-    function challenge(address payable, uint256) external override {}
+    // function challenge(address payable, uint256) external override {}
 
-    function checkBlockProducerSignatureInHead(uint256) external pure override returns (bool) {
-        return true;
-    }
+    // function checkBlockProducerSignatureInHead(uint256) external pure override returns (bool) {
+    //     return true;
+    // }
 }
