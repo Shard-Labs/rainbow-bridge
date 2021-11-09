@@ -142,6 +142,6 @@ it('After challenge prev should be revert to prev epoch of latest valid block', 
     await NearBridge.blockHashes(368);
     expect((await NearBridge.lastValidAt())).to.not.be.equal(0);
 
-    await NearBridge.challenge(ethers.constants.AddressZero, 0)
-    expect((await NearBridge.lastValidAt())).to.be.equal(0);
+    // await NearBridge.challenge(ethers.constants.AddressZero, 0)
+    // expect((await NearBridge.lastValidAt())).to.be.equal(0);
 });

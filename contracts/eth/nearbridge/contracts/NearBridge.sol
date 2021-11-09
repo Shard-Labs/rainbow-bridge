@@ -5,6 +5,7 @@ import "./AdminControlled.sol";
 import "./INearBridge.sol";
 import "./NearDecoder.sol";
 import "./Ed25519.sol";
+import "hardhat/console.sol";
 
 contract NearBridge is INearBridge, AdminControlled {
     using Borsh for Borsh.Data;
@@ -103,8 +104,12 @@ contract NearBridge is INearBridge, AdminControlled {
         unchecked {
             Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
             NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
-            bytes memory message =
-                abi.encodePacked(uint8(0), untrustedNextHash, Utils.swapBytes8(untrustedHeight + 2), bytes23(0));
+            bytes memory message = abi.encodePacked(
+                uint8(0),
+                untrustedNextHash,
+                Utils.swapBytes8(untrustedHeight + 2),
+                bytes23(0)
+            );
             (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
             return edwards.check(untrustedEpoch.keys[signatureIndex], signature.r, signature.s, arg1, arg2);
         }
@@ -241,8 +246,23 @@ contract NearBridge is INearBridge, AdminControlled {
                 if (approval.some) {
                     signatureSet |= 1 << i;
                     untrustedSignatures[i] = approval.signature;
+                
+                    Epoch storage untrustedEpoch = epochs[fromNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
+                    
+                    // nearBlock.next_bps.blockProducers
+                    bytes memory message = abi.encodePacked(
+                        uint8(0),
+                        untrustedNextHash,
+                        Utils.swapBytes8(untrustedHeight + 2),
+                        bytes23(0)
+                    );
+                    (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
+                    console.log("---------BEFORE--------------");
+                    require(edwards.check(untrustedEpoch.keys[i], approval.signature.r, approval.signature.s, arg1, arg2), "Error edwards");
+                    console.log("---------AFTER--------------");
                 }
             }
+
             untrustedSignatureSet = signatureSet;
             untrustedNextEpoch = fromNextEpoch;
             if (fromNextEpoch) {
