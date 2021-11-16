@@ -4,10 +4,11 @@ jobs:
   deploy:
     machine: true
     steps:
+      - checkout
       - run:
-          name: Deploy latest code using SSH
-          command: |
-            ssh $SSH_USER@$SSH_HOST "cd /opt/near/rainbow-bridge && git pull && make bsc-testnet-update && make bsc-testnet-start-relayer && make bsc-testnet-status"
+          name: Deploy latest version through nested SSH
+          command: bash .circleci/deploy.sh
+
 workflows:
   version: 2
   build-and-deploy:
