@@ -1,0 +1,27 @@
+# Add  environment file named .env placed in the project directory.
+version: '3.7'
+services:
+  eth2near-relay:
+    build:
+      context: ../../
+      dockerfile: ./.docker.bsc/testnet/Dockerfile.bsc-deploy
+    image: near:latest
+    container_name: eth2near-relay
+    restart: always
+    command: cli/index.js start eth2near-relay --gas-per-transaction ${GAS_PER_TRANSACTION} --total-submit-block ${TOTAL_SUBMIT_BLOCK} --daemon false
+
+  near2eth-relay:
+    image: near:latest
+    container_name: near2eth-relay
+    restart: always
+    command: cli/index.js start near2eth-relay --eth-master-sk ${ETH_MASTER_SK} --near2eth-relay-min-delay ${NEAR2ETH_RELAY_MIN_DELAY} --daemon false
+
+
+  bridge-watchdog:
+    image: near:latest
+    container_name: bridge-watchdog
+    restart: always
+    command: cli/index.js start bridge-watchdog --eth-master-sk ${ETH_MASTER_SK_2} --daemon false
+    depends_on:
+      - eth2near-relay
+      - near2eth-relay

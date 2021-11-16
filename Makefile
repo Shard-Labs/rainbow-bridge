@@ -105,6 +105,12 @@ eth-test-client:
 eth-test-prover:
 	cd contracts/near/eth-prover && ./test.sh
 
+# include the BSC local Makefile
+include .docker.bsc/local/Makefile
+
+# include the BSC testnet Makefile
+include .docker.bsc/testnet/Makefile
+
 .PHONY: help \
 		init-yarn \
 		gen-contracts \
