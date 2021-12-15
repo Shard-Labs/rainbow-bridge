@@ -32,7 +32,10 @@ const {
   getAddressBySecretKey,
   ethToNearApprove,
   ethToNearLock,
-  nearToEthUnlock
+  nearToEthUnlock,
+  DeployNearNFTContract,
+  MockNFT,
+  TransferNearNft2EVM
 } = require('rainbow-bridge-testing')
 const { ETHDump } = require('./commands/eth-dump')
 const { NearDump } = require('./commands/near-dump')
@@ -45,7 +48,9 @@ const {
   InitEthErc20,
   InitEthLocker,
   InitEthClient,
-  InitEthProver
+  InitEthProver,
+  InitNearNftLocker,
+  DeployEthNftFactory
 } = require('./init')
 
 // Source dir or where rainbow cli is installed (when install with npm)
@@ -53,6 +58,7 @@ const BRIDGE_SRC_DIR = __dirname
 const LIBS_SOL_SRC_DIR = path.join(BRIDGE_SRC_DIR, '..', 'contracts', 'eth')
 const LIBS_RS_SRC_DIR = path.join(BRIDGE_SRC_DIR, '..', 'contracts', 'near')
 const LIBS_TC_SRC_DIR = path.join(BRIDGE_SRC_DIR, '..', 'node_modules', 'rainbow-token-connector')
+const LIBS_NFTC_SRC_DIR = path.join(BRIDGE_SRC_DIR, '..', 'node_modules', 'rainbow-non-fungible-token-connector')
 
 RainbowConfig.declareOption(
   'near-network-id',
@@ -172,6 +178,64 @@ RainbowConfig.declareOption(
   'The secret key of the token factory account. If not specified will use master SK.'
 )
 RainbowConfig.declareOption(
+  'near-nft-locker-account',
+  'The account of the token factory contract that will be used to mint tokens locked on Ethereum.',
+  'nearlocker.node0'
+)
+RainbowConfig.declareOption(
+  'near-nft-account',
+  'The account of the nft contract.',
+  'nft.node0'
+)
+
+RainbowConfig.declareOption(
+  'near-nft-locker-sk',
+  'The secret key of the nft locker account. If not specified will use master SK.'
+)
+RainbowConfig.declareOption(
+  'eth-erc721-factory-abi-path',
+  'The path to the abi file containing the erc721 factory.',
+  path.join(LIBS_NFTC_SRC_DIR, 'res/ERC721Factory.full.abi')
+)
+RainbowConfig.declareOption(
+  'eth-erc721-factory-bin-path',
+  'The path to the bin file containing the erc721 factory.',
+  path.join(LIBS_NFTC_SRC_DIR, 'res/ERC721Factory.full.bin')
+)
+RainbowConfig.declareOption(
+  'eth-bridged-erc721-abi-path',
+  'The path to the abi file containing the erc721 bridged.',
+  path.join(LIBS_NFTC_SRC_DIR, 'res/BridgedERC721.full.abi')
+)
+RainbowConfig.declareOption(
+  'near-nft-contract-path',
+  'The path to the Wasm file containing the nft contract.',
+  path.join(LIBS_NFTC_SRC_DIR, 'res/mock_nft.wasm')
+)
+RainbowConfig.declareOption(
+  'near-nft-locker-contract-path',
+  'The path to the Wasm file containing the nft locker contract.',
+  path.join(LIBS_NFTC_SRC_DIR, 'res/near_locker.wasm')
+)
+RainbowConfig.declareOption(
+  'near-nft-locker-init-balance',
+  'The initial balance of nft locker contract in yoctoNEAR.',
+  '1000000000000000000000000000'
+)
+RainbowConfig.declareOption(
+  'eth-erc721-factory-address',
+  'ETH address of the nft factory contract.'
+)
+RainbowConfig.declareOption(
+  'eth-erc721-bridged-address',
+  'ETH address of the ERC721 contract.'
+)
+RainbowConfig.declareOption(
+  'eth-erc721-bridged-abi-path',
+  'Path to the .abi file defining Ethereum ERC721 contract.',
+  path.join(LIBS_NFTC_SRC_DIR, 'res/BridgedERC721.full.abi')
+)
+RainbowConfig.declareOption(
   'near-token-factory-contract-path',
   'The path to the Wasm file containing the token factory contract.',
   path.join(LIBS_TC_SRC_DIR, 'res/bridge_token_factory.wasm')
@@ -226,12 +290,12 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'eth-client-lock-duration',
   'The challenge window during which anyone can challenge an incorrect ED25519 signature of the Near block, in EthClient, in seconds.',
-  14400
+  3
 )
 RainbowConfig.declareOption(
   'eth-client-replace-duration',
   'Minimum time difference required to replace a block during challenge period, in EthClient, in seconds.',
-  18000
+  10
 )
 RainbowConfig.declareOption(
   'eth-client-address',
@@ -542,6 +606,64 @@ RainbowConfig.addOptions(
 
 RainbowConfig.addOptions(
   program
+    .command('init-eth-nft-factory')
+    .description(
+      'Deploys nft factory and erc721 contract.'
+    ),
+  DeployEthNftFactory.execute,
+  [
+    'eth-node-url',
+    'eth-master-sk',
+    'near-nft-locker-account',
+    'near-nft-account',
+    'eth-prover-address',
+    'eth-erc721-factory-abi-path',
+    'eth-erc721-factory-bin-path',
+    'eth-admin-address',
+    'eth-gas-multiplier'
+  ]
+)
+
+RainbowConfig.addOptions(
+  program
+    .command('init-near-nft-locker')
+    .description(
+      'TODO'
+    ),
+  InitNearNftLocker.execute,
+  [
+    'near-node-url',
+    'near-network-id',
+    'near-master-account',
+    'near-master-sk',
+    'near-prover-account',
+    'near-nft-locker-account',
+    'near-nft-locker-sk',
+    'near-nft-locker-contract-path',
+    'near-nft-locker-init-balance',
+    'eth-erc721-factory-address'
+  ]
+)
+RainbowConfig.addOptions(
+  program
+    .command('init-near-nft')
+    .description(
+      'Deploys and initializes an nft contract on NEAR blockchain.'
+    ),
+  DeployNearNFTContract.execute,
+  [
+    'near-network-id',
+    'near-master-account',
+    'near-master-sk',
+    'near-node-url',
+    'near-nft-account',
+    'near-client-init-balance',
+    'near-nft-contract-path'
+  ]
+)
+
+RainbowConfig.addOptions(
+  program
     .command('deploy-token <token_name> <eth_token_address>')
     .description('Deploys and initializes token on NEAR.'),
   async (tokenName, ethTokenAddress, args) => {
@@ -623,6 +745,64 @@ const testingCommand = program
   .description(
     'Commands that should only be used for testing purpose.'
   )
+
+// -----------------------------------------------------------------
+RainbowConfig.addOptions(
+  testingCommand
+    .command('near-mock-nft')
+    .description(
+      ''
+    )
+    .option('--token-id <tokenId>', 'Token id')
+    .option('--action <action>', 'Could be "add" to mint a new token or "get" to get a token')
+    .option('--near-recipient-account <near_recipient_account>', ''),
+  MockNFT.execute,
+  [
+    'near-network-id',
+    'near-master-account',
+    'near-master-sk',
+    'near-node-url',
+    'near-nft-account'
+  ]
+)
+
+RainbowConfig.addOptions(
+  testingCommand
+    .command('transfer-near-nft-to-evm')
+    .option('--token-id <tokenId>', 'Token id')
+    .option(
+      '--near-sender-account <near_sender_account>',
+      'Near account that will be sending fungible token.'
+    )
+    .option(
+      '--near-sender-sk <near_sender_sk>',
+      'The secret key of Near account that will be sending the fungible token.'
+    )
+    .option(
+      '--eth-receiver-address <eth_receiver_address>',
+      'The account that will be receiving the token on Ethereum side.'
+    ),
+  TransferNearNft2EVM.execute,
+  [
+    'near-node-url',
+    'near-network-id',
+    'near-nft-locker-account',
+    'near-nft-account',
+    'eth-node-url',
+    'eth-master-sk',
+    'eth-client-artifact-path',
+    'eth-client-address',
+    'eth-prover-artifact-path',
+    'eth-prover-address',
+    'eth-erc721-factory-abi-path',
+    'eth-erc721-factory-address',
+    'eth-erc721-bridged-address',
+    'eth-erc721-bridged-abi-path',
+    'eth-gas-multiplier'
+  ]
+)
+
+// -----------------------------------------------------------------
 
 RainbowConfig.addOptions(
   testingCommand

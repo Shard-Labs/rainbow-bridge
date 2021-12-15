@@ -16,7 +16,10 @@ class EthContractInitializer {
     ethGasMultiplier
   }) {
     let ethContractAddress
-    if ((!ethContractAbiPath || !ethContractBinPath) && !ethContractArtifactPath) {
+    if (
+      (!ethContractAbiPath || !ethContractBinPath) &&
+      !ethContractArtifactPath
+    ) {
       return null
     }
 
@@ -33,7 +36,9 @@ class EthContractInitializer {
         console.log('Deploying ETH contract')
         let abi, bytecode
         if (ethContractArtifactPath) {
-          ({ abi, bytecode } = JSON.parse(fs.readFileSync(ethContractArtifactPath)))
+          ;({ abi, bytecode } = JSON.parse(
+            fs.readFileSync(ethContractArtifactPath)
+          ))
         } else {
           abi = JSON.parse(fs.readFileSync(ethContractAbiPath))
           bytecode = '0x' + fs.readFileSync(ethContractBinPath)
@@ -47,19 +52,22 @@ class EthContractInitializer {
           .send({
             from: ethMasterAccount,
             gas,
-            gasPrice: new BN(await web3.eth.getGasPrice()).mul(new BN(ethGasMultiplier))
+            gasPrice: new BN(await web3.eth.getGasPrice()).mul(
+              new BN(ethGasMultiplier)
+            )
           })
         ethContractAddress = normalizeEthKey(txContract.options.address)
         console.log(`Deployed ETH contract to ${ethContractAddress}`)
         try {
           // Only WebSocket provider can close.
           web3.currentProvider.connection.close()
-        } catch (e) {
-        }
+        } catch (e) {}
         return { ethContractAddress }
       } catch (e) {
-        if (e.message.indexOf('the tx doesn\'t have the correct nonce') >= 0 ||
-            e.message.indexOf('replacement transaction underpriced') >= 0) {
+        if (
+          e.message.indexOf("the tx doesn't have the correct nonce") >= 0 ||
+          e.message.indexOf('replacement transaction underpriced') >= 0
+        ) {
           console.log('nonce error, retrying...')
           await sleep(5 * 1000)
           continue
@@ -80,16 +88,14 @@ class InitEthEd25519 {
     ethGasMultiplier
   }) {
     const ethContractInitializer = new EthContractInitializer()
-    const success = await ethContractInitializer.execute(
-      {
-        args: [],
-        gas: 5000000,
-        ethContractArtifactPath: ethEd25519ArtifactPath,
-        ethNodeUrl,
-        ethMasterSk,
-        ethGasMultiplier
-      }
-    )
+    const success = await ethContractInitializer.execute({
+      args: [],
+      gas: 5000000,
+      ethContractArtifactPath: ethEd25519ArtifactPath,
+      ethNodeUrl,
+      ethMasterSk,
+      ethGasMultiplier
+    })
     if (!success) {
       console.log("Can't deploy", ethEd25519ArtifactPath)
       process.exit(1)
@@ -109,17 +115,15 @@ class InitEthErc20 {
     ethGasMultiplier
   }) {
     const ethContractInitializer = new EthContractInitializer()
-    const success = await ethContractInitializer.execute(
-      {
-        args: [],
-        gas: 3000000,
-        ethContractAbiPath: ethErc20AbiPath,
-        ethContractBinPath: ethErc20BinPath,
-        ethNodeUrl,
-        ethMasterSk,
-        ethGasMultiplier
-      }
-    )
+    const success = await ethContractInitializer.execute({
+      args: [],
+      gas: 3000000,
+      ethContractAbiPath: ethErc20AbiPath,
+      ethContractBinPath: ethErc20BinPath,
+      ethNodeUrl,
+      ethMasterSk,
+      ethGasMultiplier
+    })
     if (!success) {
       console.log("Can't deploy", ethErc20AbiPath)
       process.exit(1)
@@ -143,7 +147,8 @@ class InitEthLocker {
   }) {
     if (ethAdminAddress === '') {
       const web3 = new Web3('')
-      ethAdminAddress = web3.eth.accounts.privateKeyToAccount(ethMasterSk).address
+      ethAdminAddress = web3.eth.accounts.privateKeyToAccount(ethMasterSk)
+        .address
     }
 
     console.log('Using as locker admin:', ethAdminAddress)
@@ -151,23 +156,21 @@ class InitEthLocker {
     const minBlockAcceptanceHeight = 0
     const pausedFlag = 0
 
-    const success = await ethContractInitializer.execute(
-      {
-        args: [
-          Buffer.from(nearTokenFactoryAccount, 'utf8'),
-          ethProverAddress,
-          minBlockAcceptanceHeight,
-          ethAdminAddress,
-          pausedFlag
-        ],
-        gas: 5000000,
-        ethContractAbiPath: ethLockerAbiPath,
-        ethContractBinPath: ethLockerBinPath,
-        ethNodeUrl,
-        ethMasterSk,
-        ethGasMultiplier
-      }
-    )
+    const success = await ethContractInitializer.execute({
+      args: [
+        Buffer.from(nearTokenFactoryAccount, 'utf8'),
+        ethProverAddress,
+        minBlockAcceptanceHeight,
+        ethAdminAddress,
+        pausedFlag
+      ],
+      gas: 5000000,
+      ethContractAbiPath: ethLockerAbiPath,
+      ethContractBinPath: ethLockerBinPath,
+      ethNodeUrl,
+      ethMasterSk,
+      ethGasMultiplier
+    })
     if (!success) {
       console.log("Can't deploy", ethLockerAbiPath)
       process.exit(1)
@@ -227,23 +230,21 @@ class InitEthClient {
       // Only WebSocket provider can close.
       web3.currentProvider.connection.close()
     } catch (e) {}
-    const success = await ethContractInitializer.execute(
-      {
-        args: [
-          ethEd25519Address,
-          lockEthAmount,
-          lockDuration,
-          replaceDuration,
-          ethAdminAddress,
-          0
-        ],
-        gas: 5000000,
-        ethContractArtifactPath: ethClientArtifactPath,
-        ethNodeUrl,
-        ethMasterSk,
-        ethGasMultiplier
-      }
-    )
+    const success = await ethContractInitializer.execute({
+      args: [
+        ethEd25519Address,
+        lockEthAmount,
+        lockDuration,
+        replaceDuration,
+        ethAdminAddress,
+        0
+      ],
+      gas: 5000000,
+      ethContractArtifactPath: ethClientArtifactPath,
+      ethNodeUrl,
+      ethMasterSk,
+      ethGasMultiplier
+    })
     if (!success) {
       console.log("Can't deploy", ethClientArtifactPath)
       process.exit(1)
@@ -270,16 +271,14 @@ class InitEthProver {
     }
 
     const ethContractInitializer = new EthContractInitializer()
-    const success = await ethContractInitializer.execute(
-      {
-        args: [ethClientAddress, ethAdminAddress, 0],
-        gas: 3000000,
-        ethContractArtifactPath: ethProverArtifactPath,
-        ethNodeUrl,
-        ethMasterSk,
-        ethGasMultiplier
-      }
-    )
+    const success = await ethContractInitializer.execute({
+      args: [ethClientAddress, ethAdminAddress, 0],
+      gas: 3000000,
+      ethContractArtifactPath: ethProverArtifactPath,
+      ethNodeUrl,
+      ethMasterSk,
+      ethGasMultiplier
+    })
     if (!success) {
       console.log("Can't deploy", ethProverArtifactPath)
       process.exit(1)
@@ -290,8 +289,59 @@ class InitEthProver {
   }
 }
 
+class InitEthNftFactory {
+  static async execute ({
+    ethNodeUrl,
+    ethMasterSk,
+    nearNftLockerAccount,
+    ethProverAddress,
+    ethErc721FactoryBinPath,
+    ethErc721FactoryAbiPath,
+    ethAdminAddress,
+    ethGasMultiplier
+  }) {
+    if (ethAdminAddress === '') {
+      const web3 = new Web3('')
+      ethAdminAddress = web3.eth.accounts.privateKeyToAccount(ethMasterSk)
+        .address
+    }
+
+    console.log('Using as locker admin:', ethAdminAddress)
+    const ethContractInitializer = new EthContractInitializer()
+    const minBlockAcceptanceHeight = 0
+    // const pausedFlag = 0
+    const success = await ethContractInitializer.execute({
+      args: [
+        ethProverAddress,
+        Buffer.from(nearNftLockerAccount, 'utf8'),
+        minBlockAcceptanceHeight
+        // ethAdminAddress,
+        // pausedFlag
+      ],
+      gas: 5000000,
+      ethContractAbiPath: ethErc721FactoryAbiPath,
+      ethContractBinPath: ethErc721FactoryBinPath,
+      ethNodeUrl,
+      ethMasterSk,
+      ethGasMultiplier
+    })
+
+    if (!success) {
+      console.log("Can't deploy", ethErc721FactoryAbiPath)
+      process.exit(1)
+    }
+    const ethErc721FactoryAddress = success.ethContractAddress
+
+    return {
+      ethErc721FactoryAddress,
+      ethAdminAddress
+    }
+  }
+}
+
 exports.InitEthEd25519 = InitEthEd25519
 exports.InitEthErc20 = InitEthErc20
 exports.InitEthLocker = InitEthLocker
 exports.InitEthClient = InitEthClient
 exports.InitEthProver = InitEthProver
+exports.InitEthNftFactory = InitEthNftFactory
