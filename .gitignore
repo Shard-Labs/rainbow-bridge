@@ -13,3 +13,5 @@ eth2near/ethashproof/cmd/epoch/epoch
 eth2near/ethashproof/cmd/relayer/relayer
 
 .env
+.docker.bsc/testnet/.env
+config.json
