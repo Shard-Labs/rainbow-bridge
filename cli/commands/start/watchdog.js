@@ -7,7 +7,7 @@ class StartWatchdogCommand {
   static async execute ({
     daemon,
     ethNodeUrl,
-    ethMasterSk,
+    ethMasterSk2,
     ethClientArtifactPath,
     ethClientAddress,
     watchdogDelay,
@@ -32,7 +32,7 @@ class StartWatchdogCommand {
             'start',
             'bridge-watchdog',
             '--eth-node-url', ethNodeUrl,
-            '--eth-master-sk', ethMasterSk,
+            '--eth-master-sk2', ethMasterSk2,
             '--eth-client-artifact-path', ethClientArtifactPath,
             '--eth-client-address', ethClientAddress,
             '--watchdog-delay', watchdogDelay,
@@ -47,13 +47,13 @@ class StartWatchdogCommand {
       const watchdog = new Watchdog()
       await watchdog.initialize({
         ethNodeUrl,
-        ethMasterSk,
+        ethMasterSk2,
         ethClientArtifactPath,
         ethClientAddress,
         metricsPort
       })
       await watchdog.run({
-        ethMasterSk,
+        ethMasterSk2,
         ethClientAddress,
         watchdogDelay,
         watchdogErrorDelay

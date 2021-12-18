@@ -14,7 +14,7 @@ const SLOW_TX_ERROR_MSG = 'transaction not executed within 5 minutes'
 class Watchdog {
   async initialize ({
     ethNodeUrl,
-    ethMasterSk,
+    ethMasterSk2,
     ethClientArtifactPath,
     ethClientAddress,
     metricsPort
@@ -22,7 +22,7 @@ class Watchdog {
     this.robustWeb3 = new RobustWeb3(ethNodeUrl)
     this.web3 = this.robustWeb3.web3
     this.metricsPort = metricsPort
-    const ethMasterAccount = this.web3.eth.accounts.privateKeyToAccount(normalizeEthKey(ethMasterSk))
+    const ethMasterAccount = this.web3.eth.accounts.privateKeyToAccount(normalizeEthKey(ethMasterSk2))
     this.web3.eth.accounts.wallet.add(ethMasterAccount)
     this.web3.eth.defaultAccount = ethMasterAccount.address
     this.ethMasterAccount = ethMasterAccount.address
@@ -40,7 +40,7 @@ class Watchdog {
   }
 
   async run ({
-    ethMasterSk,
+    ethMasterSk2,
     ethClientAddress,
     watchdogDelay,
     watchdogErrorDelay
@@ -51,10 +51,10 @@ class Watchdog {
     const incorrectBlocks = httpPrometheus.counter('incorrect_blocks', 'number of incorrect blocks found')
     const challengesSubmitted = httpPrometheus.counter('challenges_submitted', 'number of blocks challenged')
 
-    if (ethMasterSk.startsWith('0x')) {
-      ethMasterSk = ethMasterSk.slice(2)
+    if (ethMasterSk2.startsWith('0x')) {
+      ethMasterSk2 = ethMasterSk2.slice(2)
     }
-    ethMasterSk = Buffer.from(ethMasterSk, 'hex')
+    ethMasterSk2 = Buffer.from(ethMasterSk2, 'hex')
     while (true) {
       try {
         const bridgeState = await this.clientContract.methods
@@ -108,7 +108,7 @@ class Watchdog {
                         .challenge(this.ethMasterAccount, i)
                         .encodeABI()
                     })
-                    tx.sign(ethMasterSk)
+                    tx.sign(ethMasterSk2)
                     tx = '0x' + tx.serialize().toString('hex')
 
                     await promiseWithTimeout(

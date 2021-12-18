@@ -75,6 +75,10 @@ RainbowConfig.declareOption(
   'The secret key of the master account on Ethereum blockchain.'
 )
 RainbowConfig.declareOption(
+  'eth-master-sk2',
+  'The secret key of the master account on Ethereum blockchain.'
+)
+RainbowConfig.declareOption(
   'near-client-account',
   'The account of the Near Client contract that can be used to accept ETH headers.',
   'rainbow_bridge_eth_on_near_client'
@@ -395,7 +399,7 @@ RainbowConfig.addOptions(
   StartWatchdogCommand.execute,
   [
     'eth-node-url',
-    'eth-master-sk',
+    'eth-master-sk2',
     'eth-client-artifact-path',
     'eth-client-address',
     'watchdog-delay',
