@@ -1,5 +1,5 @@
 # Deploy to BSC testnet
 1. Create **config.json** file in the project root and past configurations inside it.
-2. Rename **example.env** to **.env** file inside **.docker.bsc/testnet/** folder an update Private Keys.
-3. Build docker compose file => `make -f .docker.bsc/testnet/Makefile docker-update`.
-4. Start relayers => `make -f .docker.bsc/testnet/Makefile docker-start-relayer`.
+2. Build docker compose file => `make -f .docker.bsc/testnet/Makefile bsc-testnet-update`.
+3. Start relayers => `make -f .docker.bsc/testnet/Makefile bsc-testnet-start-relayer`.
+4. Stop relayers => `make -f .docker.bsc/testnet/Makefile bsc-testnet-stop-all`.
