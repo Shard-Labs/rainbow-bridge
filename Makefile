@@ -52,9 +52,13 @@ deploy-full-contracts:
 	cli/index.js init-eth-ed25519
 	cli/index.js init-eth-client
 	cli/index.js init-eth-prover
-	cli/index.js init-eth-erc20
+
+deploy-token-connector:
 	cli/index.js init-eth-locker
 	cli/index.js init-near-token-factory
+
+deploy-erc20-token:
+	cli/index.js init-erc20-token --eth-erc20-address 0x64544969ed7ebf5f083679233325356ebe738930
 
 # ===============================Relayers==============================
 
@@ -97,7 +101,6 @@ bsc-test-client:
 bsc-test-prover:
 	cd contracts/near/eth-prover && ./test.sh bsc
 
-<<<<<<< HEAD
 
 # ===============================Test the bsc bridge==============================
 testnet-near-balance:
@@ -118,38 +121,3 @@ testnet-transfer-near-to-eth:
 		--eth-receiver-address 0xDf08F82De32B8d460adbE8D72043E3a7e25A3B39
 
 .PHONY: help init yarn-init gen-contracts local-start local-start-bsc local-full-contracts init-config testnet-full-contracts start-relayer stop-all build-eth-client build-bsc-client build-eth-prover test-eth-client near-balance transfer-eth-to-near transfer-near-to-eth
-
-include .docker.testnet/Makefile
-=======
-# test eth near client
-eth-test-client:
-	cd contracts/near/eth-client && ./test.sh
-
-# test eth near prover
-eth-test-prover:
-	cd contracts/near/eth-prover && ./test.sh
-
-# include the BSC local Makefile
-include .docker.bsc/local/Makefile
-
-# include the BSC testnet Makefile
-include .docker.bsc/testnet/Makefile
-
-.PHONY: help \
-		init-yarn \
-		gen-contracts \
-		setup-clean-and-prepare \
-		start-local-near-and-ganache-nodes \
-		deploy-full-contracts \
-		deploy-full-contracts \
-		start-relayer \
-		stop-all \
-		bsc-build-client \
-		bsc-build-prover \
-		eth-build-client \
-		eth-build-prover \
-		bsc-test-client \
-		bsc-test-prover \
-		eth-test-client \
-		eth-test-prover
->>>>>>> docker/refactorDirectory

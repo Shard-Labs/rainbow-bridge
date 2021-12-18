@@ -26,7 +26,9 @@ class InitNearTokenFactory {
       )
       nearTokenFactorySk = nearMasterSk
     }
-    const nearTokenFactoryPk = nearAPI.KeyPair.fromString(nearTokenFactorySk).getPublicKey()
+    const nearTokenFactoryPk = nearAPI.KeyPair.fromString(
+      nearTokenFactorySk
+    ).getPublicKey()
 
     const keyStore = new nearAPI.keyStores.InMemoryKeyStore()
     await keyStore.setKey(
@@ -79,7 +81,19 @@ class InitNearTokenFactory {
       console.log(`Failed to initialize the token factory ${err}`)
       process.exit(1)
     }
+  }
+}
 
+class InitERC20Token {
+  static async execute ({
+    nearNodeUrl,
+    nearNetworkId,
+    nearMasterAccount,
+    nearMasterSk,
+    nearTokenFactoryAccount,
+    nearTokenFactorySk,
+    ethErc20Address
+  }) {
     const deployedTokenInfo = await DeployToken.execute({
       tokenName: 'erc20',
       ethTokenAddress: ethErc20Address,
@@ -105,5 +119,5 @@ class InitNearTokenFactory {
     }
   }
 }
-
 exports.InitNearTokenFactory = InitNearTokenFactory
+exports.InitERC20Token = InitERC20Token

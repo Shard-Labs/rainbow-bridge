@@ -42,6 +42,7 @@ const { RainbowConfig } = require('rainbow-bridge-utils')
 const {
   InitNearContracts,
   InitNearTokenFactory,
+  InitERC20Token,
   InitEthEd25519,
   InitEthErc20,
   InitEthLocker,
@@ -561,6 +562,24 @@ RainbowConfig.addOptions(
     'near-token-factory-contract-path',
     'near-token-factory-init-balance',
     'eth-locker-address',
+    'eth-erc20-address'
+  ]
+)
+
+RainbowConfig.addOptions(
+  program
+    .command('init-erc20-token')
+    .description(
+      'Deploys and initializes token to NEAR blockchain.'
+    ),
+  InitERC20Token.execute,
+  [
+    'near-node-url',
+    'near-network-id',
+    'near-master-account',
+    'near-master-sk',
+    'near-token-factory-account',
+    'near-token-factory-sk',
     'eth-erc20-address'
   ]
 )
