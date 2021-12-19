@@ -91,7 +91,7 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'near-client-contract-path',
   'The path to the Wasm file containing the Near Client contract.',
-  path.join(LIBS_RS_SRC_DIR, 'res/eth_client.wasm')
+  path.join(LIBS_RS_SRC_DIR, 'res/bsc_client.wasm')
 )
 RainbowConfig.declareOption(
   'near-client-init-balance',
@@ -144,7 +144,7 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'near-prover-contract-path',
   'The path to the Wasm file containing the Near Prover contract.',
-  path.join(LIBS_RS_SRC_DIR, 'res/eth_prover.wasm')
+  path.join(LIBS_RS_SRC_DIR, 'res/bsc_prover.wasm')
 )
 RainbowConfig.declareOption(
   'near-prover-init-balance',
@@ -233,7 +233,7 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'eth-client-lock-eth-amount',
   'Amount of Ether that should be temporarily locked when submitting a new header to EthClient, in wei.',
-  '100000000000000000000'
+  '1000000000000000'
 )
 RainbowConfig.declareOption(
   'eth-client-lock-duration',
