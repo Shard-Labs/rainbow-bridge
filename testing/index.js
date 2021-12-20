@@ -1,23 +1,24 @@
 const {
-  TransferETHERC20ToNear,
-  TransferEthERC20FromNear,
-  DeployToken
+    TransferETHERC20ToNear,
+    TransferEthERC20FromNear,
+    DeployToken
 } = require('./transfer-eth-erc20')
 const {
-  mintErc20,
-  getErc20Balance,
-  getBridgeOnNearBalance,
-  getClientBlockHeightHash,
-  getAddressBySecretKey,
-  ethToNearApprove,
-  ethToNearLock,
-  nearToEthUnlock
+    mintErc20,
+    getErc20Balance,
+    getBridgeOnNearBalance,
+    getClientBlockHeightHash,
+    getAddressBySecretKey,
+    ethToNearApprove,
+    ethToNearLock,
+    nearToEthUnlock
 } = require('./adapter')
 
 const {
-  DeployNearNFTContract,
-  MockNFT,
-  TransferNearNft2EVM
+    DeployNearNFTContract,
+    MockNFT,
+    TransferNearNft2EVM,
+    TransferETHERC721ToNear
 } = require('./near2evm-transfer-eth-erc721')
 
 exports.TransferETHERC20ToNear = TransferETHERC20ToNear
@@ -34,3 +35,4 @@ exports.nearToEthUnlock = nearToEthUnlock
 exports.DeployNearNFTContract = DeployNearNFTContract
 exports.MockNFT = MockNFT
 exports.TransferNearNft2EVM = TransferNearNft2EVM
+exports.TransferETHERC721ToNear = TransferETHERC721ToNear

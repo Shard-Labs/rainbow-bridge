@@ -18,9 +18,9 @@ const {
 const { NearMintableToken } = require('./near-mintable-token')
 
 let initialCmd
-const txLogFilename = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-transfer-eth-erc20-from-near.log.json'
+const txLogFilename = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + '-transfer-eth-erc721-from-evm.log.json'
 
-class TransferETHERC20ToNear {
+class TransferETHERC721ToNear {
     static showRetryAndExit() {
         console.log('Retry with command:')
         console.log(initialCmd)
@@ -29,7 +29,7 @@ class TransferETHERC20ToNear {
 
     static async approve({
         robustWeb3,
-        ethERC20Contract,
+        ethERC721Contract,
         amount,
         ethSenderAccount,
         ethLockerAddress
@@ -40,54 +40,55 @@ class TransferETHERC20ToNear {
                 `Approving token transfer to ${ethLockerAddress} ${(new BN(amount)).toString()}.`
             )
             await robustWeb3.callContract(
-                ethERC20Contract,
+                ethERC721Contract,
                 'approve', [ethLockerAddress, new BN(amount)], {
                     from: ethSenderAccount,
                     gas: 5000000
                 }
             )
             console.log('Approved token transfer.')
-            TransferETHERC20ToNear.recordTransferLog({ finished: 'approve' })
+            TransferETHERC721ToNear.recordTransferLog({ finished: 'approve' })
         } catch (txRevertMessage) {
             console.log('Failed to approve.')
             console.log(txRevertMessage.toString())
-            TransferETHERC20ToNear.showRetryAndExit()
+            TransferETHERC721ToNear.showRetryAndExit()
         }
     }
 
-    static async lock({
-        robustWeb3,
-        amount,
-        ethTokenLockerContract,
-        ethErc20Address,
-        ethSenderAccount,
-        nearReceiverAccount
+    static async Withdraw({
+        proofWithdraw,
+        nearFactoryContractBorsh,
+        nearTokenContract,
+        newOwnerId
     }) {
+        const oldBalance = await nearTokenContract.ft_balance_of({
+            account_id: newOwnerId
+        })
+        console.log(
+            `Balance of ${newOwnerId} before the transfer is ${oldBalance}`
+        )
         try {
-            console.log(
-                `Transferring tokens from the ERC20 account to the token locker account ${(new BN(
-          amount
-        )).toString()}.`
+            await nearFactoryContractBorsh.withdraw(
+                proofWithdraw,
+                new BN('300000000000000'),
+                // We need to attach tokens because minting increases the contract state, by <600 bytes, which
+                // requires an additional 0.06 NEAR to be deposited to the account for state staking.
+                // Note technically 0.0537 NEAR should be enough, but we round it up to stay on the safe side.
+                new BN('100000000000000000000').mul(new BN('600'))
             )
-            const transaction = await robustWeb3.callContract(
-                ethTokenLockerContract,
-                'lockToken', [ethErc20Address, new BN(amount), nearReceiverAccount], {
-                    from: ethSenderAccount,
-                    gas: 5000000
-                }
-            )
-            console.log(transaction)
-            const lockedEvent = transaction.events.Locked
-            console.log('Success tranfer to locker')
-            TransferETHERC20ToNear.recordTransferLog({
-                finished: 'lock',
-                lockedEvent
-            })
-        } catch (txRevertMessage) {
-            console.log('Failed to lock account.')
-            console.log(txRevertMessage.toString())
-            TransferETHERC20ToNear.showRetryAndExit()
+            console.log('Transferred')
+        } catch (e) {
+            console.log('Withdraw failed with error:')
+            console.log(e)
+            TransferETHERC721ToNear.showRetryAndExit()
         }
+
+        const newBalance = await nearTokenContract.ft_balance_of({
+            account_id: newOwnerId
+        })
+        console.log(
+            `Balance of ${newOwnerId} after the transfer is ${newBalance}`
+        )
     }
 
     static async findProof({ extractor, lockedEvent, web3 }) {
@@ -114,7 +115,7 @@ class TransferETHERC20ToNear {
             }
         }
         if (logFound) {
-            TransferETHERC20ToNear.recordTransferLog({
+            TransferETHERC721ToNear.recordTransferLog({
                 finished: 'find-proof',
                 proof,
                 log,
@@ -125,7 +126,7 @@ class TransferETHERC20ToNear {
             })
         } else {
             console.log(`Failed to find log for event ${lockedEvent}`)
-            TransferETHERC20ToNear.showRetryAndExit()
+            TransferETHERC721ToNear.showRetryAndExit()
         }
     }
 
@@ -147,7 +148,7 @@ class TransferETHERC20ToNear {
             _proof.push(utils.rlp.encode(node))
         }
 
-        const proofLocker = {
+        const proofWithdraw = {
             log_index: txLogIndex,
             log_entry_data: logEntryData,
             receipt_index: receiptIndex,
@@ -159,7 +160,7 @@ class TransferETHERC20ToNear {
         const newOwnerId = lockedEvent.returnValues.accountId
         const amount = lockedEvent.returnValues.amount
         console.log(
-            `Transferring ${amount} tokens from ${lockedEvent.returnValues.token} ERC20. From ${lockedEvent.returnValues.sender} sender to ${newOwnerId} recipient`
+            `Transferring ${amount} tokens from ${lockedEvent.returnValues.token} ERC721. From ${lockedEvent.returnValues.sender} sender to ${newOwnerId} recipient`
         )
 
         const blockNumber = block.number
@@ -179,47 +180,46 @@ class TransferETHERC20ToNear {
                 break
             }
         }
-        TransferETHERC20ToNear.recordTransferLog({
+        TransferETHERC721ToNear.recordTransferLog({
             finished: 'block-safe',
-            proofLocker,
+            proofWithdraw,
             newOwnerId
         })
     }
 
-    static async deposit({
-        proofLocker,
-        nearFactoryContractBorsh,
-        nearTokenContract,
-        newOwnerId
+    static async Unlock({
+        robustWeb3,
+        amount,
+        ethTokenLockerContract,
+        ethErc721BridgedAddress,
+        ethSenderAccount,
+        nearReceiverAccount
     }) {
-        const oldBalance = await nearTokenContract.ft_balance_of({
-            account_id: newOwnerId
-        })
-        console.log(
-            `Balance of ${newOwnerId} before the transfer is ${oldBalance}`
-        )
         try {
-            await nearFactoryContractBorsh.deposit(
-                proofLocker,
-                new BN('300000000000000'),
-                // We need to attach tokens because minting increases the contract state, by <600 bytes, which
-                // requires an additional 0.06 NEAR to be deposited to the account for state staking.
-                // Note technically 0.0537 NEAR should be enough, but we round it up to stay on the safe side.
-                new BN('100000000000000000000').mul(new BN('600'))
+            console.log(
+                `Transferring tokens from the eEVM account to the token unlocker account ${(new BN(
+          amount
+        )).toString()}.`
             )
-            console.log('Transferred')
-        } catch (e) {
-            console.log('Deposit failed with error:')
-            console.log(e)
-            TransferETHERC20ToNear.showRetryAndExit()
+            const transaction = await robustWeb3.callContract(
+                ethTokenLockerContract,
+                'unlockToken', [ethErc721BridgedAddress, new BN(amount), nearReceiverAccount], {
+                    from: ethSenderAccount,
+                    gas: 5000000
+                }
+            )
+            console.log(transaction)
+            const lockedEvent = transaction.events.Locked
+            console.log('Unlock Successful')
+            TransferETHERC721ToNear.recordTransferLog({
+                finished: 'unlock',
+                lockedEvent
+            })
+        } catch (txRevertMessage) {
+            console.log('Failed to unlock token.')
+            console.log(txRevertMessage.toString())
+            TransferETHERC721ToNear.showRetryAndExit()
         }
-
-        const newBalance = await nearTokenContract.ft_balance_of({
-            account_id: newOwnerId
-        })
-        console.log(
-            `Balance of ${newOwnerId} after the transfer is ${newBalance}`
-        )
     }
 
     static recordTransferLog(obj) {
@@ -231,7 +231,7 @@ class TransferETHERC20ToNear {
             if (obj[i] && obj[i].type === 'Buffer') {
                 obj[i] = Buffer.from(obj[i].data)
             } else if (obj[i] && typeof obj[i] === 'object') {
-                obj[i] = TransferETHERC20ToNear.parseBuffer(obj[i])
+                obj[i] = TransferETHERC721ToNear.parseBuffer(obj[i])
             }
         }
         return obj
@@ -244,7 +244,7 @@ class TransferETHERC20ToNear {
                     fs.readFileSync(txLogFilename).toString()
                 ) || {}
             console.log('Transfer log found', log)
-            return TransferETHERC20ToNear.parseBuffer(log)
+            return TransferETHERC721ToNear.parseBuffer(log)
         } catch (e) {
             console.log("Coudn't find transfer log at ", txLogFilename)
             return {}
@@ -260,18 +260,18 @@ class TransferETHERC20ToNear {
         nearNetworkId,
         nearNodeUrl,
         nearMasterSk,
-        nearTokenFactoryAccount,
+        nearLocalAccount,
         nearClientAccount,
-        nearErc20Account,
+        nearErc721Account,
         ethNodeUrl,
-        ethErc20AbiPath,
-        ethErc20Address,
+        ethErc721BridgedAbiPath,
+        ethErc721BridgedAddress,
         ethLockerAbiPath,
         ethLockerAddress
     }) {
         initialCmd = args.join(' ')
-        let transferLog = TransferETHERC20ToNear.loadTransferLog()
-        console.log(`Using ETH address ${ethErc20Address}`)
+        let transferLog = TransferETHERC721ToNear.loadTransferLog()
+        console.log(`Using ETH address ${ethErc721BridgedAddress}`)
 
         const robustWeb3 = new RobustWeb3(ethNodeUrl)
         const web3 = robustWeb3.web3
@@ -282,9 +282,9 @@ class TransferETHERC20ToNear {
         web3.eth.defaultAccount = ethSenderAccount.address
         ethSenderAccount = ethSenderAccount.address
 
-        const ethERC20Contract = new web3.eth.Contract(
-            JSON.parse(fs.readFileSync(ethErc20AbiPath)),
-            ethErc20Address
+        const ethERC721Contract = new web3.eth.Contract(
+            JSON.parse(fs.readFileSync(ethErc721BridgedAbiPath)),
+            ethErc721BridgedAddress
         )
 
         const keyStore = new nearAPI.keyStores.InMemoryKeyStore()
@@ -307,14 +307,14 @@ class TransferETHERC20ToNear {
 
         const nearTokenContract = new nearAPI.Contract(
             nearMasterAccount,
-            nearErc20Account, {
+            nearErc721Account, {
                 changeMethods: [],
                 viewMethods: ['ft_balance_of']
             }
         )
         const nearFactoryContractBorsh = new NearMintableToken(
             nearMasterAccount,
-            nearTokenFactoryAccount
+            nearLocalAccount
         )
         await nearFactoryContractBorsh.accessKeyInit()
 
@@ -334,50 +334,50 @@ class TransferETHERC20ToNear {
         if (transferLog.finished === undefined) {
             // TODO fix before using
             // Mint tokens first???
-            /* await ethERC20Contract.methods
+            /* await ethERC721Contract.methods
               .mint(ethSenderAccount, Number(amount))
               .send({ from: ethSenderAccount, gas: 5000000 }) */
             console.log(
                 'Balance: ',
-                await ethERC20Contract.methods.balanceOf(ethSenderAccount).call()
+                await ethERC721Contract.methods.balanceOf(ethSenderAccount).call()
             )
-            await TransferETHERC20ToNear.approve({
+            await TransferETHERC721ToNear.approve({
                 robustWeb3,
-                ethERC20Contract,
+                ethERC721Contract,
                 amount,
                 ethSenderAccount,
                 ethLockerAddress
             })
-            transferLog = TransferETHERC20ToNear.loadTransferLog()
+            transferLog = TransferETHERC721ToNear.loadTransferLog()
         }
         if (transferLog.finished === 'approve') {
-            await TransferETHERC20ToNear.lock({
+            await TransferETHERC721ToNear.lock({
                 robustWeb3,
                 ethTokenLockerContract,
-                ethErc20Address,
+                ethErc721BridgedAddress,
                 amount,
                 nearReceiverAccount,
                 ethSenderAccount
             })
-            transferLog = TransferETHERC20ToNear.loadTransferLog()
+            transferLog = TransferETHERC721ToNear.loadTransferLog()
         }
         if (transferLog.finished === 'lock') {
-            await TransferETHERC20ToNear.findProof({
+            await TransferETHERC721ToNear.findProof({
                 extractor,
                 lockedEvent: transferLog.lockedEvent,
                 web3
             })
-            transferLog = TransferETHERC20ToNear.loadTransferLog()
+            transferLog = TransferETHERC721ToNear.loadTransferLog()
         }
         if (transferLog.finished === 'find-proof') {
-            await TransferETHERC20ToNear.waitBlockSafe({
+            await TransferETHERC721ToNear.waitBlockSafe({
                 ethOnNearClientContract,
                 ...transferLog
             })
-            transferLog = TransferETHERC20ToNear.loadTransferLog()
+            transferLog = TransferETHERC721ToNear.loadTransferLog()
         }
         if (transferLog.finished === 'block-safe') {
-            await TransferETHERC20ToNear.deposit({
+            await TransferETHERC721ToNear.unlock({
                 nearFactoryContractBorsh,
                 nearTokenContract,
                 ...transferLog
@@ -392,4 +392,4 @@ class TransferETHERC20ToNear {
     }
 }
 
-exports.TransferETHERC20ToNear = TransferETHERC20ToNear
+exports.TransferETHERC721ToNear = TransferETHERC721ToNear
