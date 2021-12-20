@@ -238,12 +238,12 @@ RainbowConfig.declareOption(
 RainbowConfig.declareOption(
   'eth-client-lock-duration',
   'The challenge window during which anyone can challenge an incorrect ED25519 signature of the Near block, in EthClient, in seconds.',
-  14400
+  1800
 )
 RainbowConfig.declareOption(
   'eth-client-replace-duration',
   'Minimum time difference required to replace a block during challenge period, in EthClient, in seconds.',
-  18000
+  3000
 )
 RainbowConfig.declareOption(
   'eth-client-address',
