@@ -72,4 +72,8 @@ contract NearProver is INearProver, AdminControlled {
             }
         }
     }
+
+    function setBridge(address _bridge) external onlyAdmin{
+        bridge = INearBridge(_bridge);
+    }
 }

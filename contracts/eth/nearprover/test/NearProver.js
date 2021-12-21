@@ -5,12 +5,13 @@ const fs = require('fs').promises;
 const { computeMerkleRoot } = require('../utils/utils');
 
 let NearProver, NearBridgeMock;
-
+let signers
 beforeEach(async function () {
+    signers = await ethers.getSigners()
     NearBridgeMock = await (await ethers.getContractFactory('NearBridgeMock')).deploy();
     NearProver = await (await ethers.getContractFactory('NearProver')).deploy(
         NearBridgeMock.address,
-        ethers.constants.AddressZero,
+        signers[0].address,
         0
     );
 });
@@ -30,6 +31,11 @@ it('should be ok', async function () {
     await testProof('0x1f7129496c461c058fb3daf258d89bf7dacb4efad5742351f66098a00bb6fa53', 5563, './proof4.json');
     await testProof('0xa9cd8eb4dd92ba5f2fef47d68e1d73ac8c57047959f6f8a2dcc664419e74e4b8', 384, './proof5.json');
     await testProof('0xcc3954a51b7c1a86861df8809f79c2bf839741e3e380e28360b8b3970a5d90bd', 377, './proof6.json');
+});
+
+it('set the bridge', async function () {
+    await NearProver.setBridge("0xee226379dB83CfFC681495730c11fDDE79BA4c0C");
+    expect(await NearProver.bridge()).equal("0xee226379dB83CfFC681495730c11fDDE79BA4c0C")
 });
 
 if (process.env['NEAR_PROOFS_DIR']) {
