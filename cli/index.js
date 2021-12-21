@@ -781,46 +781,41 @@ RainbowConfig.addOptions(
 )
 
 RainbowConfig.addOptions(
-        testingCommand
-        .command('transfer-eth-erc721-to-near')
-        .option('--token-id <tokenId>', 'Token id')
-        .option(
-            '--evm-sender-account <evm_sender_account>',
-            'EVM account that will be sending fungible token.'
-        )
-        .option(
-            '--evm-sender-sk <evm_sender_sk>',
-            'The secret key of EVM account that will be sending the fungible token.'
-        )
-        .option(
-            '--near-receiver-address <near_receiver_address>',
-            'The account that will be receiving the token on Near side.'
-        ),
-        ({ tokenName }) => {
-            if (tokenName) {
-                args.nearErc721Account = RainbowConfig.getParam(`near-${tokenName}-account`)
-            }
-            return TransferETHERC721ToNear.execute
-        }, [
-            'near-node-url',
-            'near-network-id',
-            'near-nft-locker-account',
-            'near-nft-account',
-            'near-local-account',
-            'eth-node-url',
-            'eth-master-sk',
-            'eth-client-artifact-path',
-            'eth-client-address',
-            'eth-prover-artifact-path',
-            'eth-prover-address',
-            'eth-erc721-factory-abi-path',
-            'eth-erc721-factory-address',
-            'eth-erc721-bridged-address',
-            'eth-erc721-bridged-abi-path',
-            'eth-gas-multiplier'
-        ]
+    testingCommand
+    .command('transfer-eth-erc721-to-near')
+    .option('--token-id <tokenId>', 'Token id')
+    .option(
+        '--evm-sender-account <evm_sender_account>',
+        'EVM account that will be sending fungible token.'
     )
-    // -----------------------------------------------------------------
+    .option(
+        '--evm-sender-sk <evm_sender_sk>',
+        'The secret key of EVM account that will be sending the fungible token.'
+    )
+    .option(
+        '--near-receiver-address <near_receiver_address>',
+        'The account that will be receiving the token on Near side.'
+    ),
+    TransferETHERC721ToNear.execute, [
+        'near-node-url',
+        'near-network-id',
+        'near-nft-locker-account',
+        'near-nft-account',
+        'near-nft-locker-account',
+        'eth-node-url',
+        'eth-master-sk',
+        'eth-client-artifact-path',
+        'eth-client-address',
+        'eth-prover-artifact-path',
+        'eth-prover-address',
+        'eth-erc721-factory-abi-path',
+        'eth-erc721-factory-address',
+        'eth-erc721-bridged-address',
+        'eth-erc721-bridged-abi-path',
+        'eth-gas-multiplier'
+    ]
+)
+
 
 RainbowConfig.addOptions(
     testingCommand

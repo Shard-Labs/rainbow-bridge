@@ -4910,6 +4910,10 @@ quick-lru@^5.1.1:
     near-api-js "^0.26.0"
     web3 "^1.6.0"
 
+"rainbow-non-fungible-token-connector@https://github.com/Shard-Labs/rainbow-non-fungible-token-connector#e3054a3b4517ce8b77ec6d27643777f52e2399d5":
+  version "0.0.0"
+  resolved "https://github.com/Shard-Labs/rainbow-non-fungible-token-connector#e3054a3b4517ce8b77ec6d27643777f52e2399d5"
+
 rainbow-token-connector@near/rainbow-token-connector#134b3b6ad900d90c6f993c52f4e3edf985aec61a:
   version "0.0.0"
   resolved "https://codeload.github.com/near/rainbow-token-connector/tar.gz/134b3b6ad900d90c6f993c52f4e3edf985aec61a"
