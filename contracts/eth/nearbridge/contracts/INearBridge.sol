@@ -22,7 +22,7 @@ interface INearBridge {
 
     function addLightClientBlock(bytes calldata data) external;
 
-    function challenge(address payable receiver, uint256 signatureIndex) external;
+    // function challenge(address payable receiver, uint256 signatureIndex) external;
 
-    function checkBlockProducerSignatureInHead(uint256 signatureIndex) external view returns (bool);
+    // function checkBlockProducerSignatureInHead(uint256 signatureIndex) external view returns (bool);
 }

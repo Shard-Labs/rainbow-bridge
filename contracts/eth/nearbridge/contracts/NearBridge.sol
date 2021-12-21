@@ -41,8 +41,8 @@ contract NearBridge is INearBridge, AdminControlled {
     bytes32 untrustedHash;
     bytes32 untrustedMerkleRoot;
     bytes32 untrustedNextHash;
-    uint256 untrustedSignatureSet;
-    NearDecoder.Signature[MAX_BLOCK_PRODUCERS] untrustedSignatures;
+    // uint256 untrustedSignatureSet;
+    // NearDecoder.Signature[MAX_BLOCK_PRODUCERS] untrustedSignatures;
 
     // Address of the account which submitted the last block.
     address lastSubmitter;
@@ -88,31 +88,31 @@ contract NearBridge is INearBridge, AdminControlled {
         payable(msg.sender).transfer(amount);
     }
 
-    function challenge(address payable receiver, uint signatureIndex) public override pausable(PAUSED_CHALLENGE) {
-        require(block.timestamp < lastValidAt, "No block can be challenged at this time");
-        require(!checkBlockProducerSignatureInHead(signatureIndex), "Can't challenge valid signature");
+    // function challenge(address payable receiver, uint signatureIndex) public override pausable(PAUSED_CHALLENGE) {
+    //     require(block.timestamp < lastValidAt, "No block can be challenged at this time");
+    //     require(!checkBlockProducerSignatureInHead(signatureIndex), "Can't challenge valid signature");
 
-        balanceOf[lastSubmitter] = balanceOf[lastSubmitter] - lockEthAmount;
-        receiver.transfer(lockEthAmount / 2);
-        lastValidAt = 0;
-    }
+    //     balanceOf[lastSubmitter] = balanceOf[lastSubmitter] - lockEthAmount;
+    //     receiver.transfer(lockEthAmount / 2);
+    //     lastValidAt = 0;
+    // }
 
-    function checkBlockProducerSignatureInHead(uint signatureIndex) public view override returns (bool) {
-        // Shifting by a number >= 256 returns zero.
-        require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
-        unchecked {
-            Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
-            NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
-            bytes memory message = abi.encodePacked(
-                uint8(0),
-                untrustedNextHash,
-                Utils.swapBytes8(untrustedHeight + 2),
-                bytes23(0)
-            );
-            (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
-            return edwards.check(untrustedEpoch.keys[signatureIndex], signature.r, signature.s, arg1, arg2);
-        }
-    }
+    // function checkBlockProducerSignatureInHead(uint signatureIndex) public view override returns (bool) {
+    //     // Shifting by a number >= 256 returns zero.
+    //     require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
+    //     unchecked {
+    //         Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
+    //         NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
+    //         bytes memory message = abi.encodePacked(
+    //             uint8(0),
+    //             untrustedNextHash,
+    //             Utils.swapBytes8(untrustedHeight + 2),
+    //             bytes23(0)
+    //         );
+    //         (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
+    //         return edwards.check(untrustedEpoch.keys[signatureIndex], signature.r, signature.s, arg1, arg2);
+    //     }
+    // }
 
     // The first part of initialization -- setting the validators of the current epoch.
     function initWithValidators(bytes memory data) public override onlyAdmin {
@@ -244,10 +244,22 @@ contract NearBridge is INearBridge, AdminControlled {
                 NearDecoder.OptionalSignature memory approval = nearBlock.approvals_after_next[i];
                 if (approval.some) {
                     signatureSet |= 1 << i;
-                    untrustedSignatures[i] = approval.signature;
+                    // untrustedSignatures[i] = approval.signature;
+                
+                    Epoch storage untrustedEpoch = epochs[fromNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
+                    
+                    bytes memory message = abi.encodePacked(
+                        uint8(0),
+                        untrustedNextHash,
+                        Utils.swapBytes8(untrustedHeight + 2),
+                        bytes23(0)
+                    );
+                    (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
+                    require(edwards.check(untrustedEpoch.keys[i], approval.signature.r, approval.signature.s, arg1, arg2), "Error edwards");
                 }
             }
-            untrustedSignatureSet = signatureSet;
+
+            // untrustedSignatureSet = signatureSet;
             untrustedNextEpoch = fromNextEpoch;
             if (fromNextEpoch) {
                 Epoch storage nextEpoch = epochs[(curEpoch + 2) % 3];
@@ -261,7 +273,7 @@ contract NearBridge is INearBridge, AdminControlled {
 
     function setBlockProducers(NearDecoder.BlockProducer[] memory src, Epoch storage epoch) internal {
         uint cnt = src.length;
-        require(cnt <= MAX_BLOCK_PRODUCERS, "It is not expected having that many block producers for the provided block");
+        require(cnt <= MAX_BLOCK_PRODUCERS);
         epoch.numBPs = cnt;
         unchecked {
             for (uint i = 0; i < cnt; i++) {
