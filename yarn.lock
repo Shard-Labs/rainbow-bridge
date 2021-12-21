@@ -4910,9 +4910,9 @@ quick-lru@^5.1.1:
     near-api-js "^0.26.0"
     web3 "^1.6.0"
 
-rainbow-token-connector@near/rainbow-token-connector#134b3b6ad900d90c6f993c52f4e3edf985aec61a:
+rainbow-token-connector@near/rainbow-token-connector#fdb635914156f8a11286dc86c227c6c2860cdfe2:
   version "0.0.0"
-  resolved "https://codeload.github.com/near/rainbow-token-connector/tar.gz/134b3b6ad900d90c6f993c52f4e3edf985aec61a"
+  resolved "https://codeload.github.com/near/rainbow-token-connector/tar.gz/fdb635914156f8a11286dc86c227c6c2860cdfe2"
 
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
