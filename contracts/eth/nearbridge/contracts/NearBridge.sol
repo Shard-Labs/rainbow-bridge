@@ -35,12 +35,12 @@ contract NearBridge is INearBridge, AdminControlled {
     uint64 curHeight;
 
     // The most recently added block. May still be in its challenge period, so should not be trusted.
-    uint64 untrustedHeight;
-    uint256 untrustedTimestamp;
-    bool untrustedNextEpoch;
-    bytes32 untrustedHash;
-    bytes32 untrustedMerkleRoot;
-    bytes32 untrustedNextHash;
+    uint64 blockHeight;
+    uint256 blockTimestamp;
+    bool blockNextEpoch;
+    bytes32 blockHash;
+    bytes32 blockMerkleRoot;
+    bytes32 blockNextHash;
     // uint256 untrustedSignatureSet;
     // NearDecoder.Signature[MAX_BLOCK_PRODUCERS] untrustedSignatures;
 
@@ -101,12 +101,12 @@ contract NearBridge is INearBridge, AdminControlled {
     //     // Shifting by a number >= 256 returns zero.
     //     require((untrustedSignatureSet & (1 << signatureIndex)) != 0, "No such signature");
     //     unchecked {
-    //         Epoch storage untrustedEpoch = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
+    //         Epoch storage untrustedEpoch = epochs[blockNextEpoch ? (curEpoch + 1) % 3 : curEpoch];
     //         NearDecoder.Signature storage signature = untrustedSignatures[signatureIndex];
     //         bytes memory message = abi.encodePacked(
     //             uint8(0),
-    //             untrustedNextHash,
-    //             Utils.swapBytes8(untrustedHeight + 2),
+    //             blockNextHash,
+    //             Utils.swapBytes8(blockHeight + 2),
     //             bytes23(0)
     //         );
     //         (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
@@ -155,13 +155,13 @@ contract NearBridge is INearBridge, AdminControlled {
     function bridgeState() public view returns (BridgeState memory res) {
         if (block.timestamp < lastValidAt) {
             res.currentHeight = curHeight;
-            res.nextTimestamp = untrustedTimestamp;
+            res.nextTimestamp = blockTimestamp;
             res.nextValidAt = lastValidAt;
             unchecked {
-                res.numBlockProducers = epochs[untrustedNextEpoch ? (curEpoch + 1) % 3 : curEpoch].numBPs;
+                res.numBlockProducers = epochs[blockNextEpoch ? (curEpoch + 1) % 3 : curEpoch].numBPs;
             }
         } else {
-            res.currentHeight = lastValidAt == 0 ? curHeight : untrustedHeight;
+            res.currentHeight = lastValidAt == 0 ? curHeight : blockHeight;
         }
     }
 
@@ -177,18 +177,18 @@ contract NearBridge is INearBridge, AdminControlled {
             // Commit the previous block, or make sure that it is OK to replace it.
             if (block.timestamp < lastValidAt) {
                 require(
-                    nearBlock.inner_lite.timestamp >= untrustedTimestamp + replaceDuration,
+                    nearBlock.inner_lite.timestamp >= blockTimestamp + replaceDuration,
                     "Can only replace with a sufficiently newer block"
                 );
             } else if (lastValidAt != 0) {
-                curHeight = untrustedHeight;
-                if (untrustedNextEpoch) {
+                curHeight = blockHeight;
+                if (blockNextEpoch) {
                     curEpoch = (curEpoch + 1) % 3;
                 }
                 lastValidAt = 0;
 
-                blockHashes_[curHeight] = untrustedHash;
-                blockMerkleRoots_[curHeight] = untrustedMerkleRoot;
+                blockHashes_[curHeight] = blockHash;
+                blockMerkleRoots_[curHeight] = blockMerkleRoot;
             }
 
             // Check that the new block's height is greater than the current one's.
@@ -233,11 +233,11 @@ contract NearBridge is INearBridge, AdminControlled {
                 );
             }
 
-            untrustedHeight = nearBlock.inner_lite.height;
-            untrustedTimestamp = nearBlock.inner_lite.timestamp;
-            untrustedHash = nearBlock.hash;
-            untrustedMerkleRoot = nearBlock.inner_lite.block_merkle_root;
-            untrustedNextHash = nearBlock.next_hash;
+            blockHeight = nearBlock.inner_lite.height;
+            blockTimestamp = nearBlock.inner_lite.timestamp;
+            blockHash = nearBlock.hash;
+            blockMerkleRoot = nearBlock.inner_lite.block_merkle_root;
+            blockNextHash = nearBlock.next_hash;
 
             uint256 signatureSet = 0;
             for ((uint i, uint cnt) = (0, thisEpoch.numBPs); i < cnt; i++) {
@@ -250,8 +250,8 @@ contract NearBridge is INearBridge, AdminControlled {
                     
                     bytes memory message = abi.encodePacked(
                         uint8(0),
-                        untrustedNextHash,
-                        Utils.swapBytes8(untrustedHeight + 2),
+                        blockNextHash,
+                        Utils.swapBytes8(blockHeight + 2),
                         bytes23(0)
                     );
                     (bytes32 arg1, bytes9 arg2) = abi.decode(message, (bytes32, bytes9));
@@ -260,7 +260,7 @@ contract NearBridge is INearBridge, AdminControlled {
             }
 
             // untrustedSignatureSet = signatureSet;
-            untrustedNextEpoch = fromNextEpoch;
+            blockNextEpoch = fromNextEpoch;
             if (fromNextEpoch) {
                 Epoch storage nextEpoch = epochs[(curEpoch + 2) % 3];
                 nextEpoch.epochId = nearBlock.inner_lite.next_epoch_id;
@@ -297,15 +297,15 @@ contract NearBridge is INearBridge, AdminControlled {
 
     function blockHashes(uint64 height) public view override pausable(PAUSED_VERIFY) returns (bytes32 res) {
         res = blockHashes_[height];
-        if (res == 0 && block.timestamp >= lastValidAt && lastValidAt != 0 && height == untrustedHeight) {
-            res = untrustedHash;
+        if (res == 0 && block.timestamp >= lastValidAt && lastValidAt != 0 && height == blockHeight) {
+            res = blockHash;
         }
     }
 
     function blockMerkleRoots(uint64 height) public view override pausable(PAUSED_VERIFY) returns (bytes32 res) {
         res = blockMerkleRoots_[height];
-        if (res == 0 && block.timestamp >= lastValidAt && lastValidAt != 0 && height == untrustedHeight) {
-            res = untrustedMerkleRoot;
+        if (res == 0 && block.timestamp >= lastValidAt && lastValidAt != 0 && height == blockHeight) {
+            res = blockMerkleRoot;
         }
     }
 }
