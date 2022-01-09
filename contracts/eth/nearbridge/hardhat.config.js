@@ -1,13 +1,11 @@
 require('@nomiclabs/hardhat-ethers');
 require('@nomiclabs/hardhat-waffle');
+require('@openzeppelin/hardhat-upgrades');
 require('solidity-coverage');
 
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
 module.exports = {
     solidity: {
-        version: '0.8.3',
+        version: '0.8.7',
         settings: {
             optimizer: {
                 enabled: true,

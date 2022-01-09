@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8;
+pragma solidity 0.8.7;
 
 import "./Borsh.sol";
+import "hardhat/console.sol";
 
 library NearDecoder {
     using Borsh for Borsh.Data;
